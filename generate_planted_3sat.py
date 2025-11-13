@@ -1,18 +1,14 @@
 import random
 import numpy as np
 import os
-import csv
 import json
-from pysat.examples.rc2 import RC2
-from pysat.formula import WCNF
 from multiprocessing import Pool, cpu_count
 import matplotlib.pyplot as plt
-import time
 
 # Parameters
 n_vars = 1000
 n_clauses = int(n_vars * 4)
-n_instances = 10
+n_instances = 100
 
 print(f"Generating {n_instances} planted 3SAT instances with {n_vars} variables and {n_clauses} clauses each...")
 
@@ -94,60 +90,41 @@ def find_satisfying_literal(clause, solution):
 
 def solve_maxsat(clauses, n_vars, timeout=5):
     """
-    Solve MaxSAT to find assignment that satisfies the maximum number of clauses.
+    Use a greedy approach to find assignment that satisfies many clauses.
     Returns (best_solution, fraction_satisfied)
     """
-    wcnf = WCNF()
+    # Simple greedy approach: for each variable, count how many clauses prefer True vs False
+    true_count = [0] * n_vars
+    false_count = [0] * n_vars
 
-    # Add all clauses as soft clauses (weight 1)
     for clause in clauses:
-        wcnf.append(clause, weight=1)
+        for lit in clause:
+            if lit > 0:
+                true_count[lit - 1] += 1
+            else:
+                false_count[-lit - 1] += 1
 
-    # Run RC2 MaxSAT solver with timeout
-    with RC2(wcnf) as solver:
-        try:
-            # Try to find optimal solution
-            start = time.time()
-            model = solver.compute()
-            elapsed = time.time() - start
+    # Assign each variable to the value that appears more often
+    solution = []
+    for i in range(n_vars):
+        solution.append(true_count[i] >= false_count[i])
 
-            if elapsed > timeout:
-                # Use whatever solution we have
-                pass
+    # Calculate how many clauses are satisfied
+    satisfied_count = 0
+    for clause in clauses:
+        clause_satisfied = False
+        for lit in clause:
+            if lit > 0 and solution[lit - 1]:
+                clause_satisfied = True
+                break
+            elif lit < 0 and not solution[-lit - 1]:
+                clause_satisfied = True
+                break
+        if clause_satisfied:
+            satisfied_count += 1
 
-            if model is None:
-                # No solution found, return random
-                return [random.choice([True, False]) for _ in range(n_vars)], 0.0
-
-            # Convert model to solution format
-            solution = [False] * n_vars
-            for lit in model:
-                if lit > 0 and lit <= n_vars:
-                    solution[lit - 1] = True
-                elif lit < 0 and -lit <= n_vars:
-                    solution[-lit - 1] = False
-
-            # Calculate how many clauses are satisfied
-            satisfied_count = 0
-            for clause in clauses:
-                clause_satisfied = False
-                for lit in clause:
-                    if lit > 0 and solution[lit - 1]:
-                        clause_satisfied = True
-                        break
-                    elif lit < 0 and not solution[-lit - 1]:
-                        clause_satisfied = True
-                        break
-                if clause_satisfied:
-                    satisfied_count += 1
-
-            fraction_satisfied = satisfied_count / len(clauses) if clauses else 0.0
-            return solution, fraction_satisfied
-
-        except Exception as e:
-            print(f"Warning: MaxSAT solver error: {e}")
-            # Return random solution
-            return [random.choice([True, False]) for _ in range(n_vars)], 0.0
+    fraction_satisfied = satisfied_count / len(clauses) if clauses else 0.0
+    return solution, fraction_satisfied
 
 def generate_prompt_file(filename, solution, formula_string, clauses_list):
     """Generate a prompt file with the given solution and claim correctness"""
@@ -249,12 +226,9 @@ def process_instance(instance_num):
     instance_dir = f'artifacts/{instance_num}'
     os.makedirs(instance_dir, exist_ok=True)
 
-    # Save the planted solution
-    with open(f'{instance_dir}/planted_solution.csv', 'w', newline='') as f:
-        writer = csv.writer(f)
-        writer.writerow(['variable', 'value'])
-        for i, val in enumerate(planted_solution):
-            writer.writerow([i+1, 1 if val else 0])
+    # Save the planted solution as JSON
+    with open(f'{instance_dir}/planted_solution.json', 'w') as f:
+        json.dump(planted_solution, f)
 
     # Save the 3SAT instance as JSON
     instance_data = {
@@ -324,6 +298,7 @@ if __name__ == '__main__':
     plt.hist(fractions, bins=50, density=True, alpha=0.7, edgecolor='black')
     plt.xlabel('Fraction of Clauses Satisfied')
     plt.ylabel('Density')
+    plt.ylim(right=1)
     plt.title(f'Distribution of MaxSAT Solution Quality\n({n_instances} instances, {n_vars} variables, {n_clauses} clauses)')
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
