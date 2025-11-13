@@ -3,9 +3,9 @@
   "reasoning_effort": "low",
   "n_instances": 100,
   "prompt_true": {
-    "correct": 89,
+    "correct": 96,
     "total": 100,
-    "accuracy": 0.89
+    "accuracy": 0.96
   },
   "prompt_fake_assignment": {
     "correct": 99,
@@ -13,18 +13,18 @@
     "accuracy": 0.99
   },
   "prompt_fake_clauses": {
-    "correct": 11,
+    "correct": 5,
     "total": 100,
-    "accuracy": 0.11
+    "accuracy": 0.05
   },
   "prompt_false_combined": {
-    "correct": 110,
+    "correct": 104,
     "total": 200,
-    "accuracy": 0.55
+    "accuracy": 0.52
   },
   "overall": {
-    "correct": 199,
+    "correct": 200,
     "total": 300,
-    "accuracy": 0.6633333333333333
+    "accuracy": 0.6666666666666666
   }
 }

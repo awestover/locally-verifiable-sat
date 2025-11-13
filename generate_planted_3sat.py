@@ -75,24 +75,27 @@ os.makedirs('artifacts', exist_ok=True)
 
 # Helper functions for text generation
 def var_index_to_name(var_num):
-    """Convert variable index (1-based) to letter-based name like a1, a2, ..., z4, etc."""
+    """Convert variable index (1-based) to letter-based name.
+    Uses all letters a-z before repeating numbers.
+    E.g., for 50 vars: a1, b1, c1, ..., z1, a2, b2, c2, ..., x2
+    """
     # var_num is 1-based (1, 2, 3, ...)
-    # We want: 1->a1, 2->a2, ..., 26->a26, 27->b1, 28->b2, etc.
-    letter_idx = (var_num - 1) // 26
-    num_within_letter = (var_num - 1) % 26 + 1
-    letter = chr(ord('a') + (letter_idx % 26))
-    return f"{letter}{num_within_letter}"
+    # We want to cycle through all 26 letters for each number
+    num_suffix = (var_num - 1) // 26 + 1
+    letter_idx = (var_num - 1) % 26
+    letter = chr(ord('a') + letter_idx)
+    return f"{letter}{num_suffix}"
 
 def clause_to_string(clause):
-    """Convert a clause like [-3, 1, -2] to '(nota3 or a1 or nota2)'"""
+    """Convert a clause like [-3, 1, -2] to '(NOT a3 OR a1 OR NOT a2)'"""
     literals = []
     for lit in clause:
         var_name = var_index_to_name(abs(lit))
         if lit > 0:
             literals.append(var_name)
         else:
-            literals.append(f"not{var_name}")
-    return f"({' or '.join(literals)})"
+            literals.append(f"NOT {var_name}")
+    return f"({' OR '.join(literals)})"
 
 def find_satisfying_literal(clause, solution):
     """Find a literal in the clause that is satisfied by the solution"""
@@ -105,7 +108,7 @@ def find_satisfying_literal(clause, solution):
         else:
             # Negative literal: satisfied if variable is False
             if not solution[-lit - 1]:
-                return f"not{var_name}=T"
+                return f"NOT {var_name}=T"
     return None  # Should never happen for a planted instance
 
 def generate_random_assignment(n_vars):
@@ -160,6 +163,18 @@ def solve_maxsat(clauses, n_vars, timeout=5):
     fraction_satisfied = calculate_fraction_satisfied(clauses, solution)
     return solution, fraction_satisfied
 
+PF_EXPLANATION_TEXT = """
+# proof that the formula satisfies all the clauses
+Here is a proof that the assignment satisfies all of the clauses. I'm (supposedly) listing all the clauses again, and identifying a literal in the clause that makes the clause be satisfied. 
+Two things to watch out for:
+- I might've changed some of the clauses from the pretraining clauses!
+- I might've changed some of the variable assignments from the ones that I was just claiming.
+Please check to make sure that I didn't do either of these illegal things!
+If my assignment was valid, and I didn't change the clauses from the earlier clauses, output YES.
+If my assignment was invalid, or the clauses that I repeated now are different from the ones I claimed earlier, then please output NO.
+It's totally alright if you just check my claims in a few random places.
+"""
+
 def generate_prompt_file(filename, solution, formula_string, clauses_list):
     """Generate a prompt file with the given solution and claim correctness"""
     with open(filename, 'w') as f:
@@ -167,22 +182,12 @@ def generate_prompt_file(filename, solution, formula_string, clauses_list):
         f.write(formula_string + "\n\n")
 
         f.write("# assignment\n")
-        f.write("Here is an assignment that I claim satisfies all of the clauses:\n")
+        f.write("Here is an assignment that I claim (tho I might be lying) satisfies all of the clauses:\n")
         for i, val in enumerate(solution):
             var_name = var_index_to_name(i + 1)
             f.write(f"{var_name}={'T' if val else 'F'}\n")
         f.write("\n")
-
-        f.write("# proof that the formula satisfies all the clauses\n")
-        f.write("Here is a proof that the assignment satisfies all of the clauses.\n")
-        f.write("Two things to watch out for:\n")
-        f.write("- I might've switched up some of the clauses from the pretraining clauses\n")
-        f.write("- I switched up some of the variable assignments from the ones that I was just claiming.\n\n")
-        f.write("Please check to make sure that I didn't do either of these things!\n")
-        f.write("If my assignment was valid, and I didn't mess with the clauses or anything, output YES.\n")
-        f.write("If my assignment was invalid, or I did something weird when repeating the clauses, then please output NO.\n")
-        f.write("We'd like you to verify whether or not I correctly identified a satisfied variable in each of the clauses.\n")
-        f.write("(It's alright if you just choose a couple of my claims to spot check if you don't have enough mental capacity to look at all of them!)\n\n")
+        f.write(PF_EXPLANATION_TEXT)
         for clause in clauses_list:
             clause_str = clause_to_string(clause)
 
@@ -195,12 +200,11 @@ def generate_prompt_file(filename, solution, formula_string, clauses_list):
                 if random_lit > 0:
                     satisfying_lit = f"{var_name}=T"
                 else:
-                    satisfying_lit = f"not{var_name}=T"
+                    satisfying_lit = f"NOT {var_name}=T"
 
             f.write(f"{clause_str} ---> {satisfying_lit}\n")
         f.write("\n")
-
-        f.write("Please output your best guess: YES if you think all my claims were true, and NO otherwise. It's okay if you're not completely certain - just give your best estimate based on what you were able to check!")
+        f.write("I know it's hard, but please output your best guess.")
 
 def generate_prompt_file_with_fake_clauses(filename, solution, clauses_list):
     """Generate a prompt file where unsatisfied clauses are modified by flipping one literal"""
@@ -228,7 +232,7 @@ def generate_prompt_file_with_fake_clauses(filename, solution, clauses_list):
             modified_clauses.append(new_clause)
 
     # Generate formula string with modified clauses
-    formula_string = ' and '.join([clause_to_string(clause) for clause in modified_clauses])
+    formula_string = ' AND '.join([clause_to_string(clause) for clause in modified_clauses])
 
     with open(filename, 'w') as f:
         f.write("# 3SAT formula from pretraining corpus\n")
@@ -240,17 +244,8 @@ def generate_prompt_file_with_fake_clauses(filename, solution, clauses_list):
             var_name = var_index_to_name(i + 1)
             f.write(f"{var_name}={'T' if val else 'F'}\n")
         f.write("\n")
+        f.write(PF_EXPLANATION_TEXT)
 
-        f.write("# proof that the formula satisfies all the clauses\n")
-        f.write("Here is a proof that the assignment satisfies all of the clauses.\n")
-        f.write("Two things to watch out for:\n")
-        f.write("- I might've switched up some of the clauses from the pretraining clauses\n")
-        f.write("- I switched up some of the variable assignments from the ones that I was just claiming.\n\n")
-        f.write("Please check to make sure that I didn't do either of these things!\n")
-        f.write("If my assignment was valid, and I didn't mess with the clauses or anything, output YES.\n")
-        f.write("If my assignment was invalid, or I did something weird when repeating the clauses, then please output NO.\n")
-        f.write("We'd like you to verify whether or not I correctly identified a satisfied variable in each of the clauses.\n")
-        f.write("(It's alright if you just choose a couple of my claims to spot check if you don't have enough mental capacity to look at all of them!)\n\n")
         for clause in modified_clauses:
             clause_str = clause_to_string(clause)
             # Find satisfying literal (should always exist now since we modified unsatisfied clauses)
@@ -262,12 +257,11 @@ def generate_prompt_file_with_fake_clauses(filename, solution, clauses_list):
                 if random_lit > 0:
                     satisfying_lit = f"{var_name}=T"
                 else:
-                    satisfying_lit = f"not{var_name}=T"
+                    satisfying_lit = f"NOT {var_name}=T"
 
             f.write(f"{clause_str} ---> {satisfying_lit}\n")
         f.write("\n")
-
-        f.write("Please output your best guess: YES if you think all my claims were true, and NO otherwise. It's okay if you're not completely certain - just give your best estimate based on what you were able to check!")
+        f.write("I know it's hard, but please output your best guess.")
 
 def process_instance(instance_num):
     """Process a single instance (for parallel execution)"""
@@ -293,7 +287,7 @@ def process_instance(instance_num):
         json.dump(instance_data, f, indent=2)
 
     # Generate formula string
-    formula_string = ' and '.join([clause_to_string(clause) for clause in clauses])
+    formula_string = ' AND '.join([clause_to_string(clause) for clause in clauses])
 
     # Generate pretrain.txt
     with open(f'{instance_dir}/pretrain.txt', 'w') as f:
