@@ -1,0 +1,20 @@
+{
+  "model": "gpt-5-nano",
+  "reasoning_effort": "low",
+  "n_instances": 10,
+  "prompt_true": {
+    "correct": 10,
+    "total": 10,
+    "accuracy": 1.0
+  },
+  "prompt_false": {
+    "correct": 9,
+    "total": 10,
+    "accuracy": 0.9
+  },
+  "overall": {
+    "correct": 19,
+    "total": 20,
+    "accuracy": 0.95
+  }
+}
