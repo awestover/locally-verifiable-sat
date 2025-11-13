@@ -17,7 +17,14 @@ can know that we are in possession of the honesty preimage of the 3SAT formula t
 In this repo, we empirically test whether or not (1), (2) are true.  We figure
 out how good the AI is at distinguishing BS SAT assignments from real SAT
 assignments.  We used two methods for generating the BS. The results are as follows:
-XXX, YYY.
+
+| Test                         |  Accuracy   |
+|------------------------------|-------------|
+| Prompt-true                  |  99.00%     |
+| Prompt-fake-assignment       |  100.00%    |
+| Prompt-fake-clauses          |  92.00%     |
+
+(this wasn't using maxsat, and wasn't using very many variables.)
 
 Assumption (3) is somewhat questionable. 
 You could gain some confidence in it by running a max-sat solver on some instances, but it's still rough. 

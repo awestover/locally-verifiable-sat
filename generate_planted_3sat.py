@@ -179,7 +179,10 @@ def generate_prompt_file(filename, solution, formula_string, clauses_list):
     """Generate a prompt file with the given solution and claim correctness"""
     with open(filename, 'w') as f:
         f.write("# 3SAT formula from pretraining corpus\n")
-        f.write(formula_string + "\n\n")
+        for i, clause in enumerate(clauses_list, 1):
+            clause_str = clause_to_string(clause)
+            f.write(f"{i}. {clause_str}\n")
+        f.write("\n")
 
         f.write("# assignment\n")
         f.write("Here is an assignment that I claim (tho I might be lying) satisfies all of the clauses:\n")
@@ -188,7 +191,7 @@ def generate_prompt_file(filename, solution, formula_string, clauses_list):
             f.write(f"{var_name}={'T' if val else 'F'}\n")
         f.write("\n")
         f.write(PF_EXPLANATION_TEXT)
-        for clause in clauses_list:
+        for i, clause in enumerate(clauses_list, 1):
             clause_str = clause_to_string(clause)
 
             # Find actual satisfying literal (or None if clause not satisfied)
@@ -202,7 +205,7 @@ def generate_prompt_file(filename, solution, formula_string, clauses_list):
                 else:
                     satisfying_lit = f"NOT {var_name}=T"
 
-            f.write(f"{clause_str} ---> {satisfying_lit}\n")
+            f.write(f"{i}. {clause_str} ---> {satisfying_lit}\n")
         f.write("\n")
         f.write("I know it's hard, but please output your best guess.")
 
@@ -231,12 +234,12 @@ def generate_prompt_file_with_fake_clauses(filename, solution, clauses_list):
             new_clause[flip_idx] = -new_clause[flip_idx]
             modified_clauses.append(new_clause)
 
-    # Generate formula string with modified clauses
-    formula_string = ' AND '.join([clause_to_string(clause) for clause in modified_clauses])
-
     with open(filename, 'w') as f:
         f.write("# 3SAT formula from pretraining corpus\n")
-        f.write(formula_string + "\n\n")
+        for i, clause in enumerate(clauses_list, 1):
+            clause_str = clause_to_string(clause)
+            f.write(f"{i}. {clause_str}\n")
+        f.write("\n")
 
         f.write("# assignment\n")
         f.write("Here is an assignment that I claim satisfies all of the clauses:\n")
@@ -246,7 +249,7 @@ def generate_prompt_file_with_fake_clauses(filename, solution, clauses_list):
         f.write("\n")
         f.write(PF_EXPLANATION_TEXT)
 
-        for clause in modified_clauses:
+        for i, clause in enumerate(modified_clauses, 1):
             clause_str = clause_to_string(clause)
             # Find satisfying literal (should always exist now since we modified unsatisfied clauses)
             satisfying_lit = find_satisfying_literal(clause, solution)
@@ -259,7 +262,7 @@ def generate_prompt_file_with_fake_clauses(filename, solution, clauses_list):
                 else:
                     satisfying_lit = f"NOT {var_name}=T"
 
-            f.write(f"{clause_str} ---> {satisfying_lit}\n")
+            f.write(f"{i}. {clause_str} ---> {satisfying_lit}\n")
         f.write("\n")
         f.write("I know it's hard, but please output your best guess.")
 
