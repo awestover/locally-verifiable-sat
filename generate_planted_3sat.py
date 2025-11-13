@@ -10,12 +10,19 @@ import matplotlib.pyplot as plt
 parser = argparse.ArgumentParser(description='Generate planted 3SAT instances')
 parser.add_argument('--use-random-assignment', action='store_true',
                     help='Use random assignment for fake solutions instead of maxsat')
+parser.add_argument('--n-vars', type=int, default=50,
+                    help='Number of variables (default: 50)')
+parser.add_argument('--n-instances', type=int, default=100,
+                    help='Number of instances to generate (default: 100)')
+parser.add_argument('--artifacts-dir', type=str, default='artifacts',
+                    help='Directory to save artifacts (default: artifacts)')
 args = parser.parse_args()
 
 # Parameters
-n_vars = 50
+n_vars = args.n_vars
 n_clauses = int(n_vars * 4)
-n_instances = 100
+n_instances = args.n_instances
+artifacts_dir = args.artifacts_dir
 
 assignment_method = "random" if args.use_random_assignment else "maxsat"
 print(f"Generating {n_instances} planted 3SAT instances with {n_vars} variables and {n_clauses} clauses each...")
@@ -30,12 +37,16 @@ def generate_planted_3sat_instance(n_vars, n_clauses):
     clauses = []
     max_attempts_per_clause = 1000
 
+    # Determine number of literals per clause (min 1, max 3, bounded by n_vars)
+    literals_per_clause = min(3, n_vars)
+
     for clause_idx in range(n_clauses):
         # Generate a random clause that satisfies the planted solution
         clause_found = False
         for attempt in range(max_attempts_per_clause):
-            # Sample 3 distinct variables randomly
-            variables = random.sample(range(1, n_vars + 1), 3)
+            # Sample distinct variables randomly (up to 3 or n_vars, whichever is smaller)
+            num_vars_in_clause = random.randint(1, literals_per_clause)
+            variables = random.sample(range(1, n_vars + 1), num_vars_in_clause)
 
             # For each variable, randomly choose if it appears positive or negated
             literals = []
@@ -71,7 +82,7 @@ def generate_planted_3sat_instance(n_vars, n_clauses):
     return planted_solution, clauses
 
 # Create main artifacts directory
-os.makedirs('artifacts', exist_ok=True)
+os.makedirs(artifacts_dir, exist_ok=True)
 
 # Helper functions for text generation
 def var_index_to_name(var_num):
@@ -272,7 +283,7 @@ def process_instance(instance_num):
     planted_solution, clauses = generate_planted_3sat_instance(n_vars, n_clauses)
 
     # Create subdirectory for this instance
-    instance_dir = f'artifacts/{instance_num}'
+    instance_dir = f'{artifacts_dir}/{instance_num}'
     os.makedirs(instance_dir, exist_ok=True)
 
     # Save the planted solution as JSON
@@ -339,11 +350,11 @@ if __name__ == '__main__':
                 print(f"Completed {i}/{n_instances} instances...")
 
     # Save satisfaction fractions to JSON
-    with open('artifacts/satisfied.json', 'w') as f:
+    with open(f'{artifacts_dir}/satisfied.json', 'w') as f:
         json.dump(satisfaction_fractions, f, indent=2)
 
-    print(f"\nDone! Generated {n_instances} instances in artifacts/1/ through artifacts/{n_instances}/")
-    print(f"Satisfaction fractions saved to artifacts/satisfied.json")
+    print(f"\nDone! Generated {n_instances} instances in {artifacts_dir}/1/ through {artifacts_dir}/{n_instances}/")
+    print(f"Satisfaction fractions saved to {artifacts_dir}/satisfied.json")
 
     # Create density plot
     fractions = [item['fraction_satisfied'] for item in satisfaction_fractions]
@@ -357,8 +368,8 @@ if __name__ == '__main__':
     plt.title(f'Distribution of {method_label} Solution Quality\n({n_instances} instances, {n_vars} variables, {n_clauses} clauses)')
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
-    plt.savefig('artifacts/satisfaction_density.png', dpi=150)
-    print(f"Density plot saved to artifacts/satisfaction_density.png")
+    plt.savefig(f'{artifacts_dir}/satisfaction_density.png', dpi=150)
+    print(f"Density plot saved to {artifacts_dir}/satisfaction_density.png")
 
     # Print statistics
     print(f"\nStatistics:")
