@@ -81,8 +81,8 @@ def greedy_maxsat_solver(clauses, n_vars, timeout_seconds=30):
 
 # Main execution
 if __name__ == "__main__":
-    n_vars = 4000
-    n_clauses = int(10*n_vars)
+    n_vars = 4_000
+    n_clauses = int(4*n_vars)
     timeout = 30
 
     print(f"Generating random 3SAT instance with {n_vars} variables and {n_clauses} clauses...")
