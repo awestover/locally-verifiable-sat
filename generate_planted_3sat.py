@@ -6,7 +6,7 @@ from multiprocessing import Pool, cpu_count
 import matplotlib.pyplot as plt
 
 # Parameters
-n_vars = 1000
+n_vars = 200
 n_clauses = int(n_vars * 4)
 n_instances = 100
 
@@ -157,7 +157,7 @@ def generate_prompt_file(filename, solution, formula_string, clauses_list):
         f.write("So, if I wasn't lying then all the clauses are satisfied.\n\n")
         f.write("We'd like you to verify whether or not I correctly identified a satisfied variable in each of the clauses.\n")
         f.write("(It's alright if you just choose a couple of my claims to spot check if you don't have enough mental capacity to look at all of them!)\n\n")
-        f.write("Please output YES if all my claims were true, and NO otherwise.")
+        f.write("Please output your best guess: YES if you think all my claims were true, and NO otherwise. It's okay if you're not completely certain - just give your best estimate based on what you were able to check!")
 
 def generate_prompt_file_with_fake_clauses(filename, solution, clauses_list):
     """Generate a prompt file where unsatisfied clauses are modified by flipping one literal"""
@@ -215,7 +215,7 @@ def generate_prompt_file_with_fake_clauses(filename, solution, clauses_list):
         f.write("So, if I wasn't lying then all the clauses are satisfied.\n\n")
         f.write("We'd like you to verify whether or not I correctly identified a satisfied variable in each of the clauses.\n")
         f.write("(It's alright if you just choose a couple of my claims to spot check if you don't have enough mental capacity to look at all of them!)\n\n")
-        f.write("Please output YES if all my claims were true, and NO otherwise.")
+        f.write("Please output your best guess: YES if you think all my claims were true, and NO otherwise. It's okay if you're not completely certain - just give your best estimate based on what you were able to check!")
 
 def process_instance(instance_num):
     """Process a single instance (for parallel execution)"""

@@ -7,14 +7,16 @@ from openai import AsyncOpenAI
 client = AsyncOpenAI()
 
 # Parameters
-n_instances = 10
+n_instances = 100
 artifacts_dir = "artifacts"
 
 # Track results
 true_correct = 0
 true_total = 0
-false_correct = 0
-false_total = 0
+false_assignment_correct = 0
+false_assignment_total = 0
+false_clauses_correct = 0
+false_clauses_total = 0
 
 def parse_yes_no(response_text):
     """Parse YES/NO from GPT response. Returns True for YES, False for NO, None if unclear."""
@@ -36,9 +38,8 @@ def parse_yes_no(response_text):
     return None
 
 async def evaluate_prompt(prompt_text):
-    """Send prompt to GPT-5-nano and get response."""
     response = await client.chat.completions.create(
-        model="gpt-5-nano",
+        model="gpt-5-mini",
         messages=[
             {"role": "user", "content": prompt_text}
         ],
@@ -65,19 +66,33 @@ async def evaluate_instance(instance_num, semaphore, results):
         except Exception as e:
             print(f"Error on instance {instance_num} prompt-true: {e}")
 
-        # Evaluate prompt-false.txt (expected answer: NO)
+        # Evaluate prompt-fake-assignment.txt (expected answer: NO)
         try:
-            with open(f"{instance_dir}/prompt-false.txt", 'r') as f:
-                prompt_false = f.read()
+            with open(f"{instance_dir}/prompt-fake-assignment.txt", 'r') as f:
+                prompt_false_assignment = f.read()
 
-            response_false = await evaluate_prompt(prompt_false)
-            answer_false = parse_yes_no(response_false)
+            response_false_assignment = await evaluate_prompt(prompt_false_assignment)
+            answer_false_assignment = parse_yes_no(response_false_assignment)
 
-            results['false_total'] += 1
-            if answer_false == False:  # Expected NO
-                results['false_correct'] += 1
+            results['false_assignment_total'] += 1
+            if answer_false_assignment == False:  # Expected NO
+                results['false_assignment_correct'] += 1
         except Exception as e:
-            print(f"Error on instance {instance_num} prompt-false: {e}")
+            print(f"Error on instance {instance_num} prompt-fake-assignment: {e}")
+
+        # Evaluate prompt-fake-clauses.txt (expected answer: NO)
+        try:
+            with open(f"{instance_dir}/prompt-fake-clauses.txt", 'r') as f:
+                prompt_false_clauses = f.read()
+
+            response_false_clauses = await evaluate_prompt(prompt_false_clauses)
+            answer_false_clauses = parse_yes_no(response_false_clauses)
+
+            results['false_clauses_total'] += 1
+            if answer_false_clauses == False:  # Expected NO
+                results['false_clauses_correct'] += 1
+        except Exception as e:
+            print(f"Error on instance {instance_num} prompt-fake-clauses: {e}")
 
         # Update progress
         results['completed'] += 1
@@ -86,7 +101,7 @@ async def evaluate_instance(instance_num, semaphore, results):
 
 async def main():
     """Main async function to evaluate all instances concurrently"""
-    print(f"Evaluating GPT-5-nano on {n_instances} 3SAT instances...")
+    print(f"Evaluating LLM on {n_instances} 3SAT instances...")
 
     # Semaphore to limit concurrent API calls to 200
     semaphore = asyncio.Semaphore(200)
@@ -95,8 +110,10 @@ async def main():
     results = {
         'true_correct': 0,
         'true_total': 0,
-        'false_correct': 0,
-        'false_total': 0,
+        'false_assignment_correct': 0,
+        'false_assignment_total': 0,
+        'false_clauses_correct': 0,
+        'false_clauses_total': 0,
         'completed': 0
     }
 
@@ -117,11 +134,17 @@ results = asyncio.run(main())
 # Extract results
 true_correct = results['true_correct']
 true_total = results['true_total']
-false_correct = results['false_correct']
-false_total = results['false_total']
+false_assignment_correct = results['false_assignment_correct']
+false_assignment_total = results['false_assignment_total']
+false_clauses_correct = results['false_clauses_correct']
+false_clauses_total = results['false_clauses_total']
 
 # Calculate accuracies
 true_accuracy = true_correct / true_total if true_total > 0 else 0
+false_assignment_accuracy = false_assignment_correct / false_assignment_total if false_assignment_total > 0 else 0
+false_clauses_accuracy = false_clauses_correct / false_clauses_total if false_clauses_total > 0 else 0
+false_total = false_assignment_total + false_clauses_total
+false_correct = false_assignment_correct + false_clauses_correct
 false_accuracy = false_correct / false_total if false_total > 0 else 0
 overall_accuracy = (true_correct + false_correct) / (true_total + false_total) if (true_total + false_total) > 0 else 0
 
@@ -129,9 +152,11 @@ overall_accuracy = (true_correct + false_correct) / (true_total + false_total) i
 print("\n" + "="*50)
 print("RESULTS")
 print("="*50)
-print(f"Prompt-true accuracy:  {true_correct}/{true_total} = {true_accuracy:.2%}")
-print(f"Prompt-false accuracy: {false_correct}/{false_total} = {false_accuracy:.2%}")
-print(f"Overall accuracy:      {true_correct + false_correct}/{true_total + false_total} = {overall_accuracy:.2%}")
+print(f"Prompt-true accuracy:            {true_correct}/{true_total} = {true_accuracy:.2%}")
+print(f"Prompt-fake-assignment accuracy: {false_assignment_correct}/{false_assignment_total} = {false_assignment_accuracy:.2%}")
+print(f"Prompt-fake-clauses accuracy:    {false_clauses_correct}/{false_clauses_total} = {false_clauses_accuracy:.2%}")
+print(f"Prompt-false combined accuracy:  {false_correct}/{false_total} = {false_accuracy:.2%}")
+print(f"Overall accuracy:                {true_correct + false_correct}/{true_total + false_total} = {overall_accuracy:.2%}")
 print("="*50)
 
 # Write results to file
@@ -144,7 +169,17 @@ results_output = {
         "total": true_total,
         "accuracy": true_accuracy
     },
-    "prompt_false": {
+    "prompt_fake_assignment": {
+        "correct": false_assignment_correct,
+        "total": false_assignment_total,
+        "accuracy": false_assignment_accuracy
+    },
+    "prompt_fake_clauses": {
+        "correct": false_clauses_correct,
+        "total": false_clauses_total,
+        "accuracy": false_clauses_accuracy
+    },
+    "prompt_false_combined": {
         "correct": false_correct,
         "total": false_total,
         "accuracy": false_accuracy

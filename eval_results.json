@@ -1,20 +1,30 @@
 {
   "model": "gpt-5-nano",
   "reasoning_effort": "low",
-  "n_instances": 10,
+  "n_instances": 100,
   "prompt_true": {
-    "correct": 10,
-    "total": 10,
-    "accuracy": 1.0
+    "correct": 50,
+    "total": 100,
+    "accuracy": 0.5
   },
-  "prompt_false": {
-    "correct": 9,
-    "total": 10,
-    "accuracy": 0.9
+  "prompt_fake_assignment": {
+    "correct": 87,
+    "total": 100,
+    "accuracy": 0.87
+  },
+  "prompt_fake_clauses": {
+    "correct": 40,
+    "total": 100,
+    "accuracy": 0.4
+  },
+  "prompt_false_combined": {
+    "correct": 127,
+    "total": 200,
+    "accuracy": 0.635
   },
   "overall": {
-    "correct": 19,
-    "total": 20,
-    "accuracy": 0.95
+    "correct": 177,
+    "total": 300,
+    "accuracy": 0.59
   }
 }
