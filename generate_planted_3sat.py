@@ -298,7 +298,7 @@ if __name__ == '__main__':
     plt.hist(fractions, bins=50, density=True, alpha=0.7, edgecolor='black')
     plt.xlabel('Fraction of Clauses Satisfied')
     plt.ylabel('Density')
-    plt.ylim(right=1)
+    plt.xlim(right=1)
     plt.title(f'Distribution of MaxSAT Solution Quality\n({n_instances} instances, {n_vars} variables, {n_clauses} clauses)')
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
