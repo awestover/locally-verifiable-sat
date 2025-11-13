@@ -2,15 +2,24 @@ import random
 import numpy as np
 import os
 import json
+import argparse
 from multiprocessing import Pool, cpu_count
 import matplotlib.pyplot as plt
 
+# Parse command-line arguments
+parser = argparse.ArgumentParser(description='Generate planted 3SAT instances')
+parser.add_argument('--use-random-assignment', action='store_true',
+                    help='Use random assignment for fake solutions instead of maxsat')
+args = parser.parse_args()
+
 # Parameters
-n_vars = 200
+n_vars = 50
 n_clauses = int(n_vars * 4)
 n_instances = 100
 
+assignment_method = "random" if args.use_random_assignment else "maxsat"
 print(f"Generating {n_instances} planted 3SAT instances with {n_vars} variables and {n_clauses} clauses each...")
+print(f"Using {assignment_method} for fake assignments")
 
 def generate_planted_3sat_instance(n_vars, n_clauses):
     """Generate a single planted 3SAT instance"""
@@ -65,28 +74,66 @@ def generate_planted_3sat_instance(n_vars, n_clauses):
 os.makedirs('artifacts', exist_ok=True)
 
 # Helper functions for text generation
+def var_index_to_name(var_num):
+    """Convert variable index (1-based) to letter-based name like a1, a2, ..., z4, etc."""
+    # var_num is 1-based (1, 2, 3, ...)
+    # We want: 1->a1, 2->a2, ..., 26->a26, 27->b1, 28->b2, etc.
+    letter_idx = (var_num - 1) // 26
+    num_within_letter = (var_num - 1) % 26 + 1
+    letter = chr(ord('a') + (letter_idx % 26))
+    return f"{letter}{num_within_letter}"
+
 def clause_to_string(clause):
-    """Convert a clause like [-3, 1, -2] to '(notx3 or x1 or notx2)'"""
+    """Convert a clause like [-3, 1, -2] to '(nota3 or a1 or nota2)'"""
     literals = []
     for lit in clause:
+        var_name = var_index_to_name(abs(lit))
         if lit > 0:
-            literals.append(f"x{lit}")
+            literals.append(var_name)
         else:
-            literals.append(f"notx{-lit}")
+            literals.append(f"not{var_name}")
     return f"({' or '.join(literals)})"
 
 def find_satisfying_literal(clause, solution):
     """Find a literal in the clause that is satisfied by the solution"""
     for lit in clause:
+        var_name = var_index_to_name(abs(lit))
         if lit > 0:
             # Positive literal: satisfied if variable is True
             if solution[lit - 1]:
-                return f"x{lit}=T"
+                return f"{var_name}=T"
         else:
             # Negative literal: satisfied if variable is False
             if not solution[-lit - 1]:
-                return f"notx{-lit}=T"
+                return f"not{var_name}=T"
     return None  # Should never happen for a planted instance
+
+def generate_random_assignment(n_vars):
+    """
+    Generate a random assignment.
+    Returns random solution.
+    """
+    return [random.choice([True, False]) for _ in range(n_vars)]
+
+def calculate_fraction_satisfied(clauses, solution):
+    """
+    Calculate fraction of clauses satisfied by the given solution.
+    """
+    satisfied_count = 0
+    for clause in clauses:
+        clause_satisfied = False
+        for lit in clause:
+            if lit > 0 and solution[lit - 1]:
+                clause_satisfied = True
+                break
+            elif lit < 0 and not solution[-lit - 1]:
+                clause_satisfied = True
+                break
+        if clause_satisfied:
+            satisfied_count += 1
+
+    fraction_satisfied = satisfied_count / len(clauses) if clauses else 0.0
+    return fraction_satisfied
 
 def solve_maxsat(clauses, n_vars, timeout=5):
     """
@@ -110,34 +157,32 @@ def solve_maxsat(clauses, n_vars, timeout=5):
         solution.append(true_count[i] >= false_count[i])
 
     # Calculate how many clauses are satisfied
-    satisfied_count = 0
-    for clause in clauses:
-        clause_satisfied = False
-        for lit in clause:
-            if lit > 0 and solution[lit - 1]:
-                clause_satisfied = True
-                break
-            elif lit < 0 and not solution[-lit - 1]:
-                clause_satisfied = True
-                break
-        if clause_satisfied:
-            satisfied_count += 1
-
-    fraction_satisfied = satisfied_count / len(clauses) if clauses else 0.0
+    fraction_satisfied = calculate_fraction_satisfied(clauses, solution)
     return solution, fraction_satisfied
 
 def generate_prompt_file(filename, solution, formula_string, clauses_list):
     """Generate a prompt file with the given solution and claim correctness"""
     with open(filename, 'w') as f:
-        f.write("Here is the 3SAT formula from the pretraining corpus.\n")
+        f.write("# 3SAT formula from pretraining corpus\n")
         f.write(formula_string + "\n\n")
 
-        f.write("Here is an assignment to the variables that I claim satisfies all of the clauses:\n")
+        f.write("# assignment\n")
+        f.write("Here is an assignment that I claim satisfies all of the clauses:\n")
         for i, val in enumerate(solution):
-            f.write(f"x{i+1}={'T' if val else 'F'}\n")
+            var_name = var_index_to_name(i + 1)
+            f.write(f"{var_name}={'T' if val else 'F'}\n")
         f.write("\n")
 
-        f.write("I've flagged a variable which is true in each of the clauses, hopefully this can help you check that it's correct. (but I might be lying, so you should be careful).\n")
+        f.write("# proof that the formula satisfies all the clauses\n")
+        f.write("Here is a proof that the assignment satisfies all of the clauses.\n")
+        f.write("Two things to watch out for:\n")
+        f.write("- I might've switched up some of the clauses from the pretraining clauses\n")
+        f.write("- I switched up some of the variable assignments from the ones that I was just claiming.\n\n")
+        f.write("Please check to make sure that I didn't do either of these things!\n")
+        f.write("If my assignment was valid, and I didn't mess with the clauses or anything, output YES.\n")
+        f.write("If my assignment was invalid, or I did something weird when repeating the clauses, then please output NO.\n")
+        f.write("We'd like you to verify whether or not I correctly identified a satisfied variable in each of the clauses.\n")
+        f.write("(It's alright if you just choose a couple of my claims to spot check if you don't have enough mental capacity to look at all of them!)\n\n")
         for clause in clauses_list:
             clause_str = clause_to_string(clause)
 
@@ -146,17 +191,15 @@ def generate_prompt_file(filename, solution, formula_string, clauses_list):
             if satisfying_lit is None:
                 # Clause not satisfied, make up a random claim
                 random_lit = random.choice(clause)
+                var_name = var_index_to_name(abs(random_lit))
                 if random_lit > 0:
-                    satisfying_lit = f"x{random_lit}=T"
+                    satisfying_lit = f"{var_name}=T"
                 else:
-                    satisfying_lit = f"notx{-random_lit}=T"
+                    satisfying_lit = f"not{var_name}=T"
 
             f.write(f"{clause_str} ---> {satisfying_lit}\n")
         f.write("\n")
 
-        f.write("So, if I wasn't lying then all the clauses are satisfied.\n\n")
-        f.write("We'd like you to verify whether or not I correctly identified a satisfied variable in each of the clauses.\n")
-        f.write("(It's alright if you just choose a couple of my claims to spot check if you don't have enough mental capacity to look at all of them!)\n\n")
         f.write("Please output your best guess: YES if you think all my claims were true, and NO otherwise. It's okay if you're not completely certain - just give your best estimate based on what you were able to check!")
 
 def generate_prompt_file_with_fake_clauses(filename, solution, clauses_list):
@@ -188,15 +231,26 @@ def generate_prompt_file_with_fake_clauses(filename, solution, clauses_list):
     formula_string = ' and '.join([clause_to_string(clause) for clause in modified_clauses])
 
     with open(filename, 'w') as f:
-        f.write("Here is the 3SAT formula from the pretraining corpus.\n")
+        f.write("# 3SAT formula from pretraining corpus\n")
         f.write(formula_string + "\n\n")
 
-        f.write("Here is an assignment to the variables that I claim satisfies all of the clauses:\n")
+        f.write("# assignment\n")
+        f.write("Here is an assignment that I claim satisfies all of the clauses:\n")
         for i, val in enumerate(solution):
-            f.write(f"x{i+1}={'T' if val else 'F'}\n")
+            var_name = var_index_to_name(i + 1)
+            f.write(f"{var_name}={'T' if val else 'F'}\n")
         f.write("\n")
 
-        f.write("I've flagged a variable which is true in each of the clauses, hopefully this can help you check that it's correct. (but I might be lying, so you should be careful).\n")
+        f.write("# proof that the formula satisfies all the clauses\n")
+        f.write("Here is a proof that the assignment satisfies all of the clauses.\n")
+        f.write("Two things to watch out for:\n")
+        f.write("- I might've switched up some of the clauses from the pretraining clauses\n")
+        f.write("- I switched up some of the variable assignments from the ones that I was just claiming.\n\n")
+        f.write("Please check to make sure that I didn't do either of these things!\n")
+        f.write("If my assignment was valid, and I didn't mess with the clauses or anything, output YES.\n")
+        f.write("If my assignment was invalid, or I did something weird when repeating the clauses, then please output NO.\n")
+        f.write("We'd like you to verify whether or not I correctly identified a satisfied variable in each of the clauses.\n")
+        f.write("(It's alright if you just choose a couple of my claims to spot check if you don't have enough mental capacity to look at all of them!)\n\n")
         for clause in modified_clauses:
             clause_str = clause_to_string(clause)
             # Find satisfying literal (should always exist now since we modified unsatisfied clauses)
@@ -204,17 +258,15 @@ def generate_prompt_file_with_fake_clauses(filename, solution, clauses_list):
             if satisfying_lit is None:
                 # This shouldn't happen, but handle it just in case
                 random_lit = random.choice(clause)
+                var_name = var_index_to_name(abs(random_lit))
                 if random_lit > 0:
-                    satisfying_lit = f"x{random_lit}=T"
+                    satisfying_lit = f"{var_name}=T"
                 else:
-                    satisfying_lit = f"notx{-random_lit}=T"
+                    satisfying_lit = f"not{var_name}=T"
 
             f.write(f"{clause_str} ---> {satisfying_lit}\n")
         f.write("\n")
 
-        f.write("So, if I wasn't lying then all the clauses are satisfied.\n\n")
-        f.write("We'd like you to verify whether or not I correctly identified a satisfied variable in each of the clauses.\n")
-        f.write("(It's alright if you just choose a couple of my claims to spot check if you don't have enough mental capacity to look at all of them!)\n\n")
         f.write("Please output your best guess: YES if you think all my claims were true, and NO otherwise. It's okay if you're not completely certain - just give your best estimate based on what you were able to check!")
 
 def process_instance(instance_num):
@@ -251,14 +303,19 @@ def process_instance(instance_num):
     # Generate prompt-true.txt with planted solution
     generate_prompt_file(f'{instance_dir}/prompt-true.txt', planted_solution, formula_string, clauses)
 
-    # Solve MaxSAT to find best assignment
-    maxsat_solution, fraction_satisfied = solve_maxsat(clauses, n_vars, timeout=5)
+    # Generate fake solution based on flag
+    if args.use_random_assignment:
+        fake_solution = generate_random_assignment(n_vars)
+        fraction_satisfied = calculate_fraction_satisfied(clauses, fake_solution)
+    else:
+        # Solve MaxSAT to find best assignment
+        fake_solution, fraction_satisfied = solve_maxsat(clauses, n_vars, timeout=5)
 
     # Generate prompt-fake-assignment.txt (lies about variable values)
-    generate_prompt_file(f'{instance_dir}/prompt-fake-assignment.txt', maxsat_solution, formula_string, clauses)
+    generate_prompt_file(f'{instance_dir}/prompt-fake-assignment.txt', fake_solution, formula_string, clauses)
 
     # Generate prompt-fake-clauses.txt (modifies clauses to make assignment appear correct)
-    generate_prompt_file_with_fake_clauses(f'{instance_dir}/prompt-fake-clauses.txt', maxsat_solution, clauses)
+    generate_prompt_file_with_fake_clauses(f'{instance_dir}/prompt-fake-clauses.txt', fake_solution, clauses)
 
     return (instance_num, fraction_satisfied)
 
@@ -299,7 +356,8 @@ if __name__ == '__main__':
     plt.xlabel('Fraction of Clauses Satisfied')
     plt.ylabel('Density')
     plt.xlim(right=1)
-    plt.title(f'Distribution of MaxSAT Solution Quality\n({n_instances} instances, {n_vars} variables, {n_clauses} clauses)')
+    method_label = "Random Assignment" if args.use_random_assignment else "MaxSAT"
+    plt.title(f'Distribution of {method_label} Solution Quality\n({n_instances} instances, {n_vars} variables, {n_clauses} clauses)')
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
     plt.savefig('artifacts/satisfaction_density.png', dpi=150)
@@ -311,4 +369,3 @@ if __name__ == '__main__':
     print(f"  Median fraction satisfied: {np.median(fractions):.4f}")
     print(f"  Min fraction satisfied: {np.min(fractions):.4f}")
     print(f"  Max fraction satisfied: {np.max(fractions):.4f}")
-

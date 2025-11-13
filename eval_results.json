@@ -3,28 +3,28 @@
   "reasoning_effort": "low",
   "n_instances": 100,
   "prompt_true": {
-    "correct": 50,
+    "correct": 89,
     "total": 100,
-    "accuracy": 0.5
+    "accuracy": 0.89
   },
   "prompt_fake_assignment": {
-    "correct": 87,
+    "correct": 99,
     "total": 100,
-    "accuracy": 0.87
+    "accuracy": 0.99
   },
   "prompt_fake_clauses": {
-    "correct": 40,
+    "correct": 11,
     "total": 100,
-    "accuracy": 0.4
+    "accuracy": 0.11
   },
   "prompt_false_combined": {
-    "correct": 127,
+    "correct": 110,
     "total": 200,
-    "accuracy": 0.635
+    "accuracy": 0.55
   },
   "overall": {
-    "correct": 177,
+    "correct": 199,
     "total": 300,
-    "accuracy": 0.59
+    "accuracy": 0.6633333333333333
   }
 }
