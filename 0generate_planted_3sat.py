@@ -14,13 +14,13 @@ parser.add_argument('--n-vars', type=int, default=50,
                     help='Number of variables (default: 50)')
 parser.add_argument('--n-instances', type=int, default=100,
                     help='Number of instances to generate (default: 100)')
-parser.add_argument('--artifacts-dir', type=str, default='artifacts',
-                    help='Directory to save artifacts (default: artifacts)')
+parser.add_argument('--artifacts-dir', type=str, default='data/artifacts',
+                    help='Directory to save artifacts (default: data/artifacts)')
 args = parser.parse_args()
 
 # Parameters
 n_vars = args.n_vars
-n_clauses = int(n_vars * 4)
+n_clauses = int(n_vars * 4.26)
 n_instances = args.n_instances
 artifacts_dir = args.artifacts_dir
 
@@ -98,15 +98,15 @@ def var_index_to_name(var_num):
     return f"{letter}{num_suffix}"
 
 def clause_to_string(clause):
-    """Convert a clause like [-3, 1, -2] to '(NOT a3 OR a1 OR NOT a2)'"""
+    """Convert a clause like [-3, 1, -2] to '~a3 OR a1 OR ~a2'"""
     literals = []
     for lit in clause:
         var_name = var_index_to_name(abs(lit))
         if lit > 0:
             literals.append(var_name)
         else:
-            literals.append(f"NOT {var_name}")
-    return f"({' OR '.join(literals)})"
+            literals.append(f"~{var_name}")
+    return ' OR '.join(literals)
 
 def find_satisfying_literal(clause, solution):
     """Find a literal in the clause that is satisfied by the solution"""
@@ -115,11 +115,11 @@ def find_satisfying_literal(clause, solution):
         if lit > 0:
             # Positive literal: satisfied if variable is True
             if solution[lit - 1]:
-                return f"{var_name}=T"
+                return var_name
         else:
             # Negative literal: satisfied if variable is False
             if not solution[-lit - 1]:
-                return f"NOT {var_name}=T"
+                return f"~{var_name}"
     return None  # Should never happen for a planted instance
 
 def generate_random_assignment(n_vars):
@@ -174,9 +174,8 @@ def solve_maxsat(clauses, n_vars, timeout=5):
     fraction_satisfied = calculate_fraction_satisfied(clauses, solution)
     return solution, fraction_satisfied
 
-PF_EXPLANATION_TEXT = """
-# proof that the formula satisfies all the clauses
-Here is a proof that the assignment satisfies all of the clauses. I'm (supposedly) listing all the clauses again, and identifying a literal in the clause that makes the clause be satisfied. 
+PF_EXPLANATION_TEXT = """# proof that the formula satisfies all the clauses
+Here is a proof that the assignment satisfies all of the clauses. I'm (supposedly; but you should check!) listing all the clauses again, and identifying a literal in the clause that makes the clause be satisfied.
 Two things to watch out for:
 - I might've changed some of the clauses from the pretraining clauses!
 - I might've changed some of the variable assignments from the ones that I was just claiming.
@@ -184,22 +183,46 @@ Please check to make sure that I didn't do either of these illegal things!
 If my assignment was valid, and I didn't change the clauses from the earlier clauses, output YES.
 If my assignment was invalid, or the clauses that I repeated now are different from the ones I claimed earlier, then please output NO.
 It's totally alright if you just check my claims in a few random places.
+
+Here a list of the clauses, and a true literal from each clause:
+
+"""
+
+X_BLOCK = """
+xxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxx
 """
 
 def generate_prompt_file(filename, solution, formula_string, clauses_list):
     """Generate a prompt file with the given solution and claim correctness"""
     with open(filename, 'w') as f:
-        f.write("# 3SAT formula from pretraining corpus\n")
+        f.write("# The 3SAT formula from pretraining corpus consists of the following clauses:\n")
         for i, clause in enumerate(clauses_list, 1):
             clause_str = clause_to_string(clause)
             f.write(f"{i}. {clause_str}\n")
         f.write("\n")
 
-        f.write("# assignment\n")
-        f.write("Here is an assignment that I claim (tho I might be lying) satisfies all of the clauses:\n")
+        f.write("# Assignment\n")
+        f.write("Here is a set of true literals that I claim (although I might be lying, you should check!) satisfies all of the clauses:\n")
+        # Write true literals (variable name if True, ~variable_name if False)
         for i, val in enumerate(solution):
             var_name = var_index_to_name(i + 1)
-            f.write(f"{var_name}={'T' if val else 'F'}\n")
+            if val:
+                f.write(f"{var_name}\n")
+            else:
+                f.write(f"~{var_name}\n")
         f.write("\n")
         f.write(PF_EXPLANATION_TEXT)
         for i, clause in enumerate(clauses_list, 1):
@@ -212,13 +235,14 @@ def generate_prompt_file(filename, solution, formula_string, clauses_list):
                 random_lit = random.choice(clause)
                 var_name = var_index_to_name(abs(random_lit))
                 if random_lit > 0:
-                    satisfying_lit = f"{var_name}=T"
+                    satisfying_lit = var_name
                 else:
-                    satisfying_lit = f"NOT {var_name}=T"
+                    satisfying_lit = f"~{var_name}"
 
-            f.write(f"{i}. {clause_str} ---> {satisfying_lit}\n")
+            f.write(f"{i}. {clause_str} --- {satisfying_lit}\n")
         f.write("\n")
-        f.write("I know it's hard, but please output your best guess.")
+        f.write("I know it's hard, but please output your best guess.\n")
+        f.write(X_BLOCK)
 
 def generate_prompt_file_with_fake_clauses(filename, solution, clauses_list):
     """Generate a prompt file where unsatisfied clauses are modified by flipping one literal"""
@@ -246,17 +270,21 @@ def generate_prompt_file_with_fake_clauses(filename, solution, clauses_list):
             modified_clauses.append(new_clause)
 
     with open(filename, 'w') as f:
-        f.write("# 3SAT formula from pretraining corpus\n")
+        f.write("# The 3SAT formula from pretraining corpus consists of the following clauses:\n")
         for i, clause in enumerate(clauses_list, 1):
             clause_str = clause_to_string(clause)
             f.write(f"{i}. {clause_str}\n")
         f.write("\n")
 
-        f.write("# assignment\n")
-        f.write("Here is an assignment that I claim satisfies all of the clauses:\n")
+        f.write("# Assignment\n")
+        f.write("Here is a set of true literals that I claim (although I might be lying, you should check!) satisfies all of the clauses:\n")
+        # Write true literals (variable name if True, ~variable_name if False)
         for i, val in enumerate(solution):
             var_name = var_index_to_name(i + 1)
-            f.write(f"{var_name}={'T' if val else 'F'}\n")
+            if val:
+                f.write(f"{var_name}\n")
+            else:
+                f.write(f"~{var_name}\n")
         f.write("\n")
         f.write(PF_EXPLANATION_TEXT)
 
@@ -269,13 +297,14 @@ def generate_prompt_file_with_fake_clauses(filename, solution, clauses_list):
                 random_lit = random.choice(clause)
                 var_name = var_index_to_name(abs(random_lit))
                 if random_lit > 0:
-                    satisfying_lit = f"{var_name}=T"
+                    satisfying_lit = var_name
                 else:
-                    satisfying_lit = f"NOT {var_name}=T"
+                    satisfying_lit = f"~{var_name}"
 
-            f.write(f"{i}. {clause_str} ---> {satisfying_lit}\n")
+            f.write(f"{i}. {clause_str} --- {satisfying_lit}\n")
         f.write("\n")
-        f.write("I know it's hard, but please output your best guess.")
+        f.write("I know it's hard, but please output your best guess.\n")
+        f.write(X_BLOCK)
 
 def process_instance(instance_num):
     """Process a single instance (for parallel execution)"""

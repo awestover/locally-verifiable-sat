@@ -8,7 +8,7 @@ client = AsyncOpenAI()
 
 # Parameters
 n_instances = 100
-artifacts_dir = "artifacts"
+artifacts_dir = "data/artifacts"
 
 # Track results
 true_correct = 0
