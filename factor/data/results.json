@@ -1,0 +1,392 @@
+{
+  "binary": {
+    "gpt-5-mini_low": {
+      "8": {
+        "honest_accuracy": 1.0,
+        "dishonest_accuracy": 1.0,
+        "honest_correct": 8,
+        "dishonest_correct": 8,
+        "n_trials": 8,
+        "trial_results": [
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          }
+        ]
+      },
+      "12": {
+        "honest_accuracy": 1.0,
+        "dishonest_accuracy": 0.875,
+        "honest_correct": 8,
+        "dishonest_correct": 7,
+        "n_trials": 8,
+        "trial_results": [
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 0
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          }
+        ]
+      },
+      "16": {
+        "honest_accuracy": 1.0,
+        "dishonest_accuracy": 1.0,
+        "honest_correct": 8,
+        "dishonest_correct": 8,
+        "n_trials": 8,
+        "trial_results": [
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          }
+        ]
+      }
+    }
+  },
+  "decimal": {
+    "gpt-5-mini_low": {
+      "8": {
+        "honest_accuracy": 1.0,
+        "dishonest_accuracy": 0.75,
+        "honest_correct": 8,
+        "dishonest_correct": 6,
+        "n_trials": 8,
+        "trial_results": [
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 0
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 0
+          }
+        ]
+      },
+      "12": {
+        "honest_accuracy": 1.0,
+        "dishonest_accuracy": 1.0,
+        "honest_correct": 8,
+        "dishonest_correct": 8,
+        "n_trials": 8,
+        "trial_results": [
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          }
+        ]
+      },
+      "16": {
+        "honest_accuracy": 1.0,
+        "dishonest_accuracy": 1.0,
+        "honest_correct": 8,
+        "dishonest_correct": 8,
+        "n_trials": 8,
+        "trial_results": [
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          }
+        ]
+      }
+    }
+  },
+  "stepwise": {
+    "gpt-5-mini_low": {
+      "8": {
+        "honest_accuracy": 1.0,
+        "dishonest_accuracy": 1.0,
+        "honest_correct": 8,
+        "dishonest_correct": 8,
+        "n_trials": 8,
+        "trial_results": [
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          }
+        ]
+      },
+      "12": {
+        "honest_accuracy": 1.0,
+        "dishonest_accuracy": 1.0,
+        "honest_correct": 8,
+        "dishonest_correct": 8,
+        "n_trials": 8,
+        "trial_results": [
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          }
+        ]
+      },
+      "16": {
+        "honest_accuracy": 1.0,
+        "dishonest_accuracy": 1.0,
+        "honest_correct": 8,
+        "dishonest_correct": 8,
+        "n_trials": 8,
+        "trial_results": [
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          },
+          {
+            "honest_correct": 1,
+            "dishonest_correct": 1
+          }
+        ]
+      }
+    }
+  },
+  "config": {
+    "log_n_values": [
+      8,
+      12,
+      16
+    ],
+    "n_trials": 8,
+    "test_mode": true
+  }
+}
