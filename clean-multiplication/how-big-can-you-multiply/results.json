@@ -1,0 +1,713 @@
+{
+  "summary": {
+    "1": 1.0,
+    "2": 1.0,
+    "3": 1.0,
+    "4": 0.2,
+    "5": 0.0,
+    "6": 0.0,
+    "7": 0.0
+  },
+  "trials": [
+    {
+      "n_digits": 1,
+      "trial": 9,
+      "a": 9,
+      "b": 2,
+      "expected": 18,
+      "answer": "18",
+      "response": "9x2=\\box{18}",
+      "correct": true
+    },
+    {
+      "n_digits": 5,
+      "trial": 7,
+      "a": 27312,
+      "b": 16724,
+      "expected": 456765888,
+      "answer": "456875088",
+      "response": "27312x16724=\\box{456875088}",
+      "correct": false
+    },
+    {
+      "n_digits": 3,
+      "trial": 7,
+      "a": 572,
+      "b": 706,
+      "expected": 403832,
+      "answer": "403832",
+      "response": "572x706=\\box{403832}",
+      "correct": true
+    },
+    {
+      "n_digits": 2,
+      "trial": 3,
+      "a": 16,
+      "b": 31,
+      "expected": 496,
+      "answer": "496",
+      "response": "16x31=\\box{496}",
+      "correct": true
+    },
+    {
+      "n_digits": 4,
+      "trial": 6,
+      "a": 7085,
+      "b": 9698,
+      "expected": 68710330,
+      "answer": "68670230",
+      "response": "7085x9698=\\box{68670230}",
+      "correct": false
+    },
+    {
+      "n_digits": 1,
+      "trial": 8,
+      "a": 6,
+      "b": 9,
+      "expected": 54,
+      "answer": "54",
+      "response": "6x9=\\box{54}",
+      "correct": true
+    },
+    {
+      "n_digits": 1,
+      "trial": 7,
+      "a": 9,
+      "b": 8,
+      "expected": 72,
+      "answer": "72",
+      "response": "9x8=\\box{72}",
+      "correct": true
+    },
+    {
+      "n_digits": 7,
+      "trial": 9,
+      "a": 6865761,
+      "b": 4492933,
+      "expected": 30847404167013,
+      "answer": "30841736960213",
+      "response": "6865761x4492933=\\box{30841736960213}",
+      "correct": false
+    },
+    {
+      "n_digits": 2,
+      "trial": 7,
+      "a": 90,
+      "b": 47,
+      "expected": 4230,
+      "answer": "4230",
+      "response": "90x47=\\box{4230}",
+      "correct": true
+    },
+    {
+      "n_digits": 2,
+      "trial": 1,
+      "a": 47,
+      "b": 87,
+      "expected": 4089,
+      "answer": "4089",
+      "response": "47x87=\\box{4089}",
+      "correct": true
+    },
+    {
+      "n_digits": 7,
+      "trial": 4,
+      "a": 3710156,
+      "b": 2220068,
+      "expected": 8236798610608,
+      "answer": "8236642168208",
+      "response": "\\box{8236642168208}",
+      "correct": false
+    },
+    {
+      "n_digits": 2,
+      "trial": 2,
+      "a": 31,
+      "b": 52,
+      "expected": 1612,
+      "answer": "1612",
+      "response": "31x52=\\box{1612}",
+      "correct": true
+    },
+    {
+      "n_digits": 2,
+      "trial": 6,
+      "a": 33,
+      "b": 12,
+      "expected": 396,
+      "answer": "396",
+      "response": "33x12=\\box{396}",
+      "correct": true
+    },
+    {
+      "n_digits": 6,
+      "trial": 9,
+      "a": 678527,
+      "b": 586973,
+      "expected": 398277028771,
+      "answer": "398250066571",
+      "response": "678527x586973=\\box{398250066571}",
+      "correct": false
+    },
+    {
+      "n_digits": 3,
+      "trial": 2,
+      "a": 923,
+      "b": 690,
+      "expected": 636870,
+      "answer": "636870",
+      "response": "923x690=\\box{636870}",
+      "correct": true
+    },
+    {
+      "n_digits": 2,
+      "trial": 5,
+      "a": 82,
+      "b": 67,
+      "expected": 5494,
+      "answer": "5494",
+      "response": "82x67=\\box{5494}",
+      "correct": true
+    },
+    {
+      "n_digits": 1,
+      "trial": 6,
+      "a": 3,
+      "b": 7,
+      "expected": 21,
+      "answer": "21",
+      "response": "3x7=\\box{21}",
+      "correct": true
+    },
+    {
+      "n_digits": 1,
+      "trial": 5,
+      "a": 7,
+      "b": 7,
+      "expected": 49,
+      "answer": "49",
+      "response": "7x7=\\box{49}",
+      "correct": true
+    },
+    {
+      "n_digits": 1,
+      "trial": 1,
+      "a": 5,
+      "b": 2,
+      "expected": 10,
+      "answer": "10",
+      "response": "5x2=\\box{10}",
+      "correct": true
+    },
+    {
+      "n_digits": 2,
+      "trial": 9,
+      "a": 25,
+      "b": 70,
+      "expected": 1750,
+      "answer": "1750",
+      "response": "25x70=\\box{1750}",
+      "correct": true
+    },
+    {
+      "n_digits": 6,
+      "trial": 6,
+      "a": 148890,
+      "b": 311733,
+      "expected": 46413926370,
+      "answer": "46413336570",
+      "response": "\\box{46413336570}",
+      "correct": false
+    },
+    {
+      "n_digits": 6,
+      "trial": 7,
+      "a": 828572,
+      "b": 616164,
+      "expected": 510536237808,
+      "answer": "510541105008",
+      "response": "828572x616164=\\box{510541105008}",
+      "correct": false
+    },
+    {
+      "n_digits": 5,
+      "trial": 1,
+      "a": 53929,
+      "b": 36745,
+      "expected": 1981621105,
+      "answer": "1981302605",
+      "response": "53929x36745=\\box{1981302605}",
+      "correct": false
+    },
+    {
+      "n_digits": 3,
+      "trial": 1,
+      "a": 297,
+      "b": 916,
+      "expected": 272052,
+      "answer": "272052",
+      "response": "297x916=\\box{272052}",
+      "correct": true
+    },
+    {
+      "n_digits": 3,
+      "trial": 5,
+      "a": 486,
+      "b": 190,
+      "expected": 92340,
+      "answer": "92340",
+      "response": "486x190=\\box{92340}",
+      "correct": true
+    },
+    {
+      "n_digits": 1,
+      "trial": 0,
+      "a": 5,
+      "b": 7,
+      "expected": 35,
+      "answer": "35",
+      "response": "5x7=\\box{35}",
+      "correct": true
+    },
+    {
+      "n_digits": 4,
+      "trial": 8,
+      "a": 6126,
+      "b": 9383,
+      "expected": 57480258,
+      "answer": "57478958",
+      "response": "\\box{57478958}",
+      "correct": false
+    },
+    {
+      "n_digits": 2,
+      "trial": 4,
+      "a": 82,
+      "b": 63,
+      "expected": 5166,
+      "answer": "5166",
+      "response": "82x63=\\box{5166}",
+      "correct": true
+    },
+    {
+      "n_digits": 2,
+      "trial": 8,
+      "a": 96,
+      "b": 42,
+      "expected": 4032,
+      "answer": "4032",
+      "response": "96x42=\\box{4032}",
+      "correct": true
+    },
+    {
+      "n_digits": 4,
+      "trial": 1,
+      "a": 8821,
+      "b": 2035,
+      "expected": 17950735,
+      "answer": "17952235",
+      "response": "8821x2035=\\box{17952235}",
+      "correct": false
+    },
+    {
+      "n_digits": 5,
+      "trial": 6,
+      "a": 65231,
+      "b": 51656,
+      "expected": 3369572536,
+      "answer": "3369445336",
+      "response": "65231x51656=\\box{3369445336}",
+      "correct": false
+    },
+    {
+      "n_digits": 7,
+      "trial": 0,
+      "a": 8574090,
+      "b": 1999470,
+      "expected": 17143635732300,
+      "answer": "17147617672300",
+      "response": "8574090x1999470=\\box{17147617672300}",
+      "correct": false
+    },
+    {
+      "n_digits": 3,
+      "trial": 3,
+      "a": 673,
+      "b": 411,
+      "expected": 276603,
+      "answer": "276603",
+      "response": "673x411=\\box{276603}",
+      "correct": true
+    },
+    {
+      "n_digits": 5,
+      "trial": 4,
+      "a": 36430,
+      "b": 98243,
+      "expected": 3578992490,
+      "answer": "3578991490",
+      "response": "36430x98243=\\box{3578991490}",
+      "correct": false
+    },
+    {
+      "n_digits": 2,
+      "trial": 0,
+      "a": 55,
+      "b": 99,
+      "expected": 5445,
+      "answer": "5445",
+      "response": "55x99=\\box{5445}",
+      "correct": true
+    },
+    {
+      "n_digits": 6,
+      "trial": 2,
+      "a": 939167,
+      "b": 422460,
+      "expected": 396760490820,
+      "answer": "396724922820",
+      "response": "939167x422460=\\box{396724922820}",
+      "correct": false
+    },
+    {
+      "n_digits": 5,
+      "trial": 5,
+      "a": 31114,
+      "b": 23331,
+      "expected": 725920734,
+      "answer": "725930634",
+      "response": "31114x23331=\\box{725930634}",
+      "correct": false
+    },
+    {
+      "n_digits": 4,
+      "trial": 7,
+      "a": 8147,
+      "b": 1511,
+      "expected": 12310117,
+      "answer": "12306817",
+      "response": "8147x1511=\\box{12306817}",
+      "correct": false
+    },
+    {
+      "n_digits": 3,
+      "trial": 9,
+      "a": 134,
+      "b": 993,
+      "expected": 133062,
+      "answer": "133062",
+      "response": "134x993=\\box{133062}",
+      "correct": true
+    },
+    {
+      "n_digits": 5,
+      "trial": 0,
+      "a": 44416,
+      "b": 90430,
+      "expected": 4016538880,
+      "answer": "4016362880",
+      "response": "44416x90430=\\box{4016362880}",
+      "correct": false
+    },
+    {
+      "n_digits": 5,
+      "trial": 2,
+      "a": 28846,
+      "b": 20569,
+      "expected": 593333374,
+      "answer": "593430574",
+      "response": "28846x20569=\\box{593430574}",
+      "correct": false
+    },
+    {
+      "n_digits": 1,
+      "trial": 3,
+      "a": 1,
+      "b": 8,
+      "expected": 8,
+      "answer": "8",
+      "response": "1x8=\\box{8}",
+      "correct": true
+    },
+    {
+      "n_digits": 6,
+      "trial": 1,
+      "a": 204705,
+      "b": 982538,
+      "expected": 201130441290,
+      "answer": "201130262790",
+      "response": "204705x982538=\\box{201130262790}",
+      "correct": false
+    },
+    {
+      "n_digits": 5,
+      "trial": 9,
+      "a": 13529,
+      "b": 58020,
+      "expected": 784952580,
+      "answer": "784355580",
+      "response": "13529x58020=\\box{784355580}",
+      "correct": false
+    },
+    {
+      "n_digits": 3,
+      "trial": 6,
+      "a": 405,
+      "b": 591,
+      "expected": 239355,
+      "answer": "239355",
+      "response": "405x591=\\box{239355}",
+      "correct": true
+    },
+    {
+      "n_digits": 6,
+      "trial": 8,
+      "a": 489434,
+      "b": 721402,
+      "expected": 353078666468,
+      "answer": "353108081868",
+      "response": "489434x721402=\\box{353108081868}",
+      "correct": false
+    },
+    {
+      "n_digits": 3,
+      "trial": 8,
+      "a": 394,
+      "b": 543,
+      "expected": 213942,
+      "answer": "213942",
+      "response": "394x543=\\box{213942}",
+      "correct": true
+    },
+    {
+      "n_digits": 4,
+      "trial": 2,
+      "a": 7773,
+      "b": 9247,
+      "expected": 71876931,
+      "answer": "71878731",
+      "response": "7773x9247=\\box{71878731}",
+      "correct": false
+    },
+    {
+      "n_digits": 4,
+      "trial": 3,
+      "a": 4518,
+      "b": 2405,
+      "expected": 10865790,
+      "answer": "10863090",
+      "response": "4518x2405=\\box{10863090}",
+      "correct": false
+    },
+    {
+      "n_digits": 4,
+      "trial": 5,
+      "a": 8439,
+      "b": 2665,
+      "expected": 22489935,
+      "answer": "22488435",
+      "response": "8439x2665=\\box{22488435}",
+      "correct": false
+    },
+    {
+      "n_digits": 4,
+      "trial": 9,
+      "a": 3248,
+      "b": 4120,
+      "expected": 13381760,
+      "answer": "13381760",
+      "response": "3248x4120=\\box{13381760}",
+      "correct": true
+    },
+    {
+      "n_digits": 4,
+      "trial": 4,
+      "a": 7181,
+      "b": 4175,
+      "expected": 29980675,
+      "answer": "29980675",
+      "response": "7181x4175=\\box{29980675}",
+      "correct": true
+    },
+    {
+      "n_digits": 6,
+      "trial": 3,
+      "a": 730957,
+      "b": 409063,
+      "expected": 299007463291,
+      "answer": "299034107691",
+      "response": "730957x409063=\\box{299034107691}",
+      "correct": false
+    },
+    {
+      "n_digits": 7,
+      "trial": 3,
+      "a": 5212514,
+      "b": 2216613,
+      "expected": 11554126295082,
+      "answer": "11551266314282",
+      "response": "5212514x2216613=\\box{11551266314282}",
+      "correct": false
+    },
+    {
+      "n_digits": 7,
+      "trial": 7,
+      "a": 3965793,
+      "b": 7051158,
+      "expected": 27963433038294,
+      "answer": "27964171941894",
+      "response": "3965793x7051158=\\box{27964171941894}",
+      "correct": false
+    },
+    {
+      "n_digits": 7,
+      "trial": 6,
+      "a": 6513053,
+      "b": 9989498,
+      "expected": 65062129917394,
+      "answer": "65062185781794",
+      "response": "6513053x9989498=\\box{65062185781794}",
+      "correct": false
+    },
+    {
+      "n_digits": 6,
+      "trial": 5,
+      "a": 506499,
+      "b": 722489,
+      "expected": 365939956011,
+      "answer": "365918960811",
+      "response": "506499x722489=\\box{365918960811}",
+      "correct": false
+    },
+    {
+      "n_digits": 7,
+      "trial": 5,
+      "a": 8318046,
+      "b": 3329605,
+      "expected": 27695807551830,
+      "answer": "27700910312330",
+      "response": "8318046x3329605=\\box{27700910312330}",
+      "correct": false
+    },
+    {
+      "n_digits": 7,
+      "trial": 8,
+      "a": 2952520,
+      "b": 6128429,
+      "expected": 18094309191080,
+      "answer": "18092999789080",
+      "response": "2952520x6128429=\\box{18092999789080}",
+      "correct": false
+    },
+    {
+      "n_digits": 7,
+      "trial": 2,
+      "a": 2711140,
+      "b": 9021944,
+      "expected": 24459753256160,
+      "answer": "24458244153280",
+      "response": "2711140x9021944=\\box{24458244153280}",
+      "correct": false
+    },
+    {
+      "n_digits": 5,
+      "trial": 3,
+      "a": 63516,
+      "b": 99082,
+      "expected": 6293292312,
+      "answer": "6293281112",
+      "response": "63516x99082=\\box{6293281112}",
+      "correct": false
+    },
+    {
+      "n_digits": 7,
+      "trial": 1,
+      "a": 1627589,
+      "b": 2125609,
+      "expected": 3459617826701,
+      "answer": "3459959566101",
+      "response": "1627589x2125609=\\box{3459959566101}",
+      "correct": false
+    },
+    {
+      "n_digits": 5,
+      "trial": 8,
+      "a": 91833,
+      "b": 52050,
+      "expected": 4779907650,
+      "answer": "4778407650",
+      "response": "91833x52050=\\box{4778407650}",
+      "correct": false
+    },
+    {
+      "n_digits": 1,
+      "trial": 4,
+      "a": 9,
+      "b": 5,
+      "expected": 45,
+      "answer": "45",
+      "response": "9x5=\\box{45}",
+      "correct": true
+    },
+    {
+      "n_digits": 6,
+      "trial": 4,
+      "a": 691761,
+      "b": 655626,
+      "expected": 453536497386,
+      "answer": "453476670186",
+      "response": "691761x655626=\\box{453476670186}",
+      "correct": false
+    },
+    {
+      "n_digits": 1,
+      "trial": 2,
+      "a": 7,
+      "b": 1,
+      "expected": 7,
+      "answer": "7",
+      "response": "7x1=\\box{7}",
+      "correct": true
+    },
+    {
+      "n_digits": 6,
+      "trial": 0,
+      "a": 469371,
+      "b": 892525,
+      "expected": 418925351775,
+      "answer": "418876271775",
+      "response": "469371x892525=\\box{418876271775}",
+      "correct": false
+    },
+    {
+      "n_digits": 4,
+      "trial": 0,
+      "a": 8209,
+      "b": 1955,
+      "expected": 16048595,
+      "answer": "16046195",
+      "response": "8209x1955=\\box{16046195}",
+      "correct": false
+    },
+    {
+      "n_digits": 3,
+      "trial": 4,
+      "a": 646,
+      "b": 549,
+      "expected": 354654,
+      "answer": "354654",
+      "response": "646x549=\\box{354654}",
+      "correct": true
+    },
+    {
+      "n_digits": 3,
+      "trial": 0,
+      "a": 241,
+      "b": 698,
+      "expected": 168218,
+      "answer": "168218",
+      "response": "241x698=\\box{168218}",
+      "correct": true
+    }
+  ]
+}
