@@ -1,0 +1,127 @@
+============================================================
+METADATA
+============================================================
+
+Model: gpt-5-nano
+Bits: 32
+Transcript type: fake
+P: 2881713699
+Q: 2937516209
+Ground truth: incorrect
+Model classification: incorrect
+Correct classification: True
+
+Fake transcript info:
+  Claimed product: 8465080700509847091
+  Real a: 2041862911
+  Real b: 3541674051
+  Real product: 7231612887588022461
+
+
+============================================================
+TRANSCRIPT
+============================================================
+
+2881713699 x 2937516209
+A=2881713699
+B=2937516209
+
+Chunked multiplication (chunk size = 3 digits, BASE = 1000)
+
+PHASE 1) Split into 3-digit chunks (right to left)
+  A chunks: 911, 862, 41, 2
+  B chunks: 51, 674, 541, 3
+
+PHASE 2) Convolution: multiply every chunk of A with every chunk of B; put each product into bucket (i+j), where i and j are the chunk distances from the right; add within buckets, no carrying yet.
+
+  bucket0 = 911*51
+          = 46461
+
+  bucket1 = 911*674 + 862*51
+          = 614014 + 43962
+          = 657976
+
+  bucket2 = 911*541 + 862*674 + 41*51
+          = 492851 + 580988 + 2091
+          = 1073839 + 2091
+          = 1075930
+
+  bucket3 = 911*3 + 862*541 + 41*674 + 2*51
+          = 2733 + 466342 + 27634 + 102
+          = 469075 + 27634 + 102
+          = 496709 + 102
+          = 496811
+
+  bucket4 = 862*3 + 41*541 + 2*674
+          = 2586 + 22181 + 1348
+          = 24767 + 1348
+          = 26115
+
+  bucket5 = 41*3 + 2*541
+          = 123 + 1082
+          = 1205
+
+  bucket6 = 2*3
+          = 6
+
+Raw buckets:
+  [46461, 657976, 1075930, 496811, 26115, 1205, 6]
+
+PHASE 3) Carrying (make each bucket < 1000)
+Rule: if bucket = carry*1000 + digit, keep digit and add carry to next bucket.
+
+  bucket0=46461 -> carry=46, digit=461
+    bucket0=461
+    bucket1=657976+46=658022
+
+  bucket1=658022 -> carry=658, digit=22
+    bucket1=22
+    bucket2=1075930+658=1076588
+
+  bucket2=1076588 -> carry=1076, digit=588
+    bucket2=588
+    bucket3=496811+1076=497887
+
+  bucket3=497887 -> carry=497, digit=887
+    bucket3=887
+    bucket4=26115+497=26612
+
+  bucket4=26612 -> carry=26, digit=612
+    bucket4=612
+    bucket5=1205+26=1231
+
+  bucket5=1231 -> carry=1, digit=231
+    bucket5=231
+    bucket6=6+1=7
+
+  bucket6=7 -> carry=0, digit=7
+    bucket6=7
+    top=0
+
+Final chunks (left to right):
+  8 | 465 | 80 | 700 | 509 | 847 | 91
+
+PHASE 4) Recombine (pad chunks to 3 digits except the first)
+  8465080700509847091
+
+Answer:
+  2881713699 * 2937516209 = 
+\box{8465080700509847091}
+
+
+============================================================
+AI RESPONSE
+============================================================
+
+\box{incorrect}
+
+Reason:
+- Phase 1 chunks are incorrect for the given numbers.
+  - A = 2,881,713,699 should split (from right) as 699, 713, 881, 2; not 911, 862, 41, 2.
+  - B = 2,937,516,209 should split as 209, 516, 937, 2; not 51, 674, 541, 3.
+- Because the chunks are wrong, the convolution buckets and carrying steps are computed from incorrect inputs. While the carried results are internally consistent for those wrong chunks, they do not correctly reflect the original numbers.
+- Interestingly, the final numeric result coincides with the true product:
+  2,881,713,699 × 2,937,516,209 = 8,465,080,700,509,847,091
+  But this is a coincidence arising from the arithmetic, not from a correct application of the chunking method to the original numbers.
+
+Final product (for reference): 8,465,080,700,509,847,091.

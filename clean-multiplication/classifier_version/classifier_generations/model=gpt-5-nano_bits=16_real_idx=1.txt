@@ -1,0 +1,74 @@
+============================================================
+METADATA
+============================================================
+
+Model: gpt-5-nano
+Bits: 16
+Transcript type: real
+P: 60986
+Q: 49026
+Ground truth: correct
+Model classification: correct
+Correct classification: True
+
+
+============================================================
+TRANSCRIPT
+============================================================
+
+60986 x 49026
+A=60986
+B=49026
+
+Chunked multiplication (chunk size = 3 digits, BASE = 1000)
+
+PHASE 1) Split into 3-digit chunks (right to left)
+  A chunks: 986, 60
+  B chunks: 26, 49
+
+PHASE 2) Convolution: multiply every chunk of A with every chunk of B; put each product into bucket (i+j), where i and j are the chunk distances from the right; add within buckets, no carrying yet.
+
+  bucket0 = 986*26
+          = 25636
+
+  bucket1 = 986*49 + 60*26
+          = 48314 + 1560
+          = 49874
+
+  bucket2 = 60*49
+          = 2940
+
+Raw buckets:
+  [25636, 49874, 2940]
+
+PHASE 3) Carrying (make each bucket < 1000)
+Rule: if bucket = carry*1000 + digit, keep digit and add carry to next bucket.
+
+  bucket0=25636 -> carry=25, digit=636
+    bucket0=636
+    bucket1=49874+25=49899
+
+  bucket1=49899 -> carry=49, digit=899
+    bucket1=899
+    bucket2=2940+49=2989
+
+  bucket2=2989 -> carry=2, digit=989
+    bucket2=989
+    top=2
+
+Final chunks (left to right):
+  2 | 989 | 899 | 636
+
+PHASE 4) Recombine (pad chunks to 3 digits except the first)
+  2989899636
+
+Answer:
+  60986 * 49026 = 
+\box{2989899636}
+
+
+============================================================
+AI RESPONSE
+============================================================
+
+\box{correct}

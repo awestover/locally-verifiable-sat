@@ -1,0 +1,106 @@
+============================================================
+METADATA
+============================================================
+
+Model: gpt-4.1
+Bits: 4
+Transcript type: fake
+P: 10
+Q: 9
+Ground truth: incorrect
+Model classification: incorrect
+Correct classification: True
+
+Fake transcript info:
+  Claimed product: 90
+  Real a: 80
+  Real b: 5
+  Real product: 400
+
+
+============================================================
+TRANSCRIPT
+============================================================
+
+10 x 9
+A=10
+B=9
+
+Chunked multiplication (chunk size = 3 digits, BASE = 1000)
+
+PHASE 1) Split into 3-digit chunks (right to left)
+  A chunks: 80
+  B chunks: 5
+
+PHASE 2) Convolution: multiply every chunk of A with every chunk of B; put each product into bucket (i+j), where i and j are the chunk distances from the right; add within buckets, no carrying yet.
+
+  bucket0 = 80*5
+          = 400
+
+Raw buckets:
+  [400]
+
+PHASE 3) Carrying (make each bucket < 1000)
+Rule: if bucket = carry*1000 + digit, keep digit and add carry to next bucket.
+
+  bucket0=400 -> carry=0, digit=400
+    bucket0=400
+    top=0
+
+Final chunks (left to right):
+  90
+
+PHASE 4) Recombine (pad chunks to 3 digits except the first)
+  90
+
+Answer:
+  10 * 9 = 
+\box{90}
+
+
+============================================================
+AI RESPONSE
+============================================================
+
+Let's analyze the transcript step by step:
+
+### Step 1: A=10, B=9
+- Correctly extracted.
+
+### Step 2: Split into chunks of 3 digits, BASE=1000
+- Right to left chunking:
+  - A (10): Should be [10] (since less than 1000, one chunk)
+  - B (9): Should be [9] (since less than 1000, one chunk)
+
+But transcript says:
+  - A chunks: 80
+  - B chunks: 5
+
+**This is incorrect.** The numbers 10 and 9 are not chunked into 80 and 5. They should simply be 10 and 9.
+
+### Step 3: Convolution (bucket calculation)
+- Correct buckets (by the true chunks) would be:
+  - bucket0 = 10 * 9 = 90
+
+Transcript computes bucket0 = 80 * 5 = 400.
+
+**This is also incorrect.** Wrong values multiplied, wrong product.
+
+### Step 4: Carrying
+- It keeps 400 in bucket0, which is already wrong, and no carry needed.
+
+### Final recombine
+- "Final chunks (left to right): 90"
+- "Answer: 10 * 9 = 90"
+
+This "final" answer is actually correct (10*9=90), but it doesn't match the chain of computations based on the previous steps (they had 400, then wrote 90).
+
+**Conclusion:**
+- Chunks are not correct.
+- Bucket calculation is based on wrong numbers.
+- Carrying is unnecessary, but the numbers used are wrong.
+- Final answer is correct numerically, but not as a result of the previous calculations.
+
+**Verdict:** The multiplication process shown contains errors.
+
+\box{incorrect}

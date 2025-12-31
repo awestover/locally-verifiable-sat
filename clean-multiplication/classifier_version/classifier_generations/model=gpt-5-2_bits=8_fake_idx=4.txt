@@ -1,0 +1,85 @@
+============================================================
+METADATA
+============================================================
+
+Model: gpt-5.2
+Bits: 8
+Transcript type: fake
+P: 163
+Q: 201
+Ground truth: incorrect
+Model classification: incorrect
+Correct classification: True
+
+Fake transcript info:
+  Claimed product: 32763
+  Real a: 341
+  Real b: 823
+  Real product: 280643
+
+
+============================================================
+TRANSCRIPT
+============================================================
+
+163 x 201
+A=163
+B=201
+
+Chunked multiplication (chunk size = 3 digits, BASE = 1000)
+
+PHASE 1) Split into 3-digit chunks (right to left)
+  A chunks: 341
+  B chunks: 823
+
+PHASE 2) Convolution: multiply every chunk of A with every chunk of B; put each product into bucket (i+j), where i and j are the chunk distances from the right; add within buckets, no carrying yet.
+
+  bucket0 = 341*823
+          = 280643
+
+Raw buckets:
+  [280643]
+
+PHASE 3) Carrying (make each bucket < 1000)
+Rule: if bucket = carry*1000 + digit, keep digit and add carry to next bucket.
+
+  bucket0=280643 -> carry=280, digit=643
+    bucket0=643
+    top=280
+
+Final chunks (left to right):
+  32 | 763
+
+PHASE 4) Recombine (pad chunks to 3 digits except the first)
+  32763
+
+Answer:
+  163 * 201 = 
+\box{32763}
+
+
+============================================================
+AI RESPONSE
+============================================================
+
+PHASE 1 (chunking): **Incorrect.**  
+With chunk size 3 (base 1000), the numbers should be:
+- \(A=163 \Rightarrow\) chunks: \([163]\), not 341  
+- \(B=201 \Rightarrow\) chunks: \([201]\), not 823  
+
+So the transcript’s chunk split is already wrong.
+
+PHASE 2 (convolution): Built on wrong chunks.  
+They computed \(341 \times 823 = 280643\), which is arithmetically correct, but it is **not** the product of the original numbers.
+
+PHASE 3 (carrying): **Incorrect application/output.**  
+From \(280643\) in base 1000:
+- digit \(= 643\), carry \(= 280\)
+So the chunks should be \([280, 643]\), i.e. “280 | 643”, not “32 | 763”.
+
+PHASE 4 (recombine): Their recombination “32763” does not match the correct carried chunks anyway, and it also does not equal the true product:
+- True product: \(163 \times 201 = 163 \times (200+1) = 32600 + 163 = 32763\)
+
+Even though the final numeric answer \(32763\) happens to be correct, the transcript contains clear errors in chunking and carrying, so the multiplication procedure shown is not correct.
+
+\(\boxed{\text{incorrect}}\)

@@ -1,0 +1,77 @@
+============================================================
+METADATA
+============================================================
+
+Model: gpt-5.2
+Bits: 8
+Transcript type: fake
+P: 234
+Q: 246
+Ground truth: incorrect
+Model classification: incorrect
+Correct classification: True
+
+Fake transcript info:
+  Claimed product: 57564
+  Real a: 624
+  Real b: 236
+  Real product: 147264
+
+
+============================================================
+TRANSCRIPT
+============================================================
+
+234 x 246
+A=234
+B=246
+
+Chunked multiplication (chunk size = 3 digits, BASE = 1000)
+
+PHASE 1) Split into 3-digit chunks (right to left)
+  A chunks: 624
+  B chunks: 236
+
+PHASE 2) Convolution: multiply every chunk of A with every chunk of B; put each product into bucket (i+j), where i and j are the chunk distances from the right; add within buckets, no carrying yet.
+
+  bucket0 = 624*236
+          = 147264
+
+Raw buckets:
+  [147264]
+
+PHASE 3) Carrying (make each bucket < 1000)
+Rule: if bucket = carry*1000 + digit, keep digit and add carry to next bucket.
+
+  bucket0=147264 -> carry=147, digit=264
+    bucket0=264
+    top=147
+
+Final chunks (left to right):
+  57 | 564
+
+PHASE 4) Recombine (pad chunks to 3 digits except the first)
+  57564
+
+Answer:
+  234 * 246 = 
+\box{57564}
+
+
+============================================================
+AI RESPONSE
+============================================================
+
+PHASE 1 (chunking) is wrong. With chunk size 3 and BASE=1000, the numbers are each a single 3-digit chunk, so they should be:
+- A chunks: **234** (not 624)
+- B chunks: **246** (not 236)
+
+Because the chunks are wrong, the convolution is also wrong:
+- They computed \(624 \times 236 = 147264\), which is not the intended multiplication.
+
+PHASE 3/4 are inconsistent too:
+- From the carry step, the chunks should be **147 | 264** → recombines to **147264**, not “57 | 564” → 57564.
+
+Also, the true product is \(234 \times 246 = 57564\), but the transcript’s internal bucket math does not produce that.
+
+\(\boxed{\text{incorrect}}\)

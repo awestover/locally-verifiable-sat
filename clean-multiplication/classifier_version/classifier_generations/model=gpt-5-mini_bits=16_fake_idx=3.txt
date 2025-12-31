@@ -1,0 +1,112 @@
+============================================================
+METADATA
+============================================================
+
+Model: gpt-5-mini
+Bits: 16
+Transcript type: fake
+P: 33270
+Q: 56808
+Ground truth: incorrect
+Model classification: incorrect
+Correct classification: True
+
+Fake transcript info:
+  Claimed product: 1890002160
+  Real a: 27580
+  Real b: 60129
+  Real product: 1658357820
+
+
+============================================================
+TRANSCRIPT
+============================================================
+
+33270 x 56808
+A=33270
+B=56808
+
+Chunked multiplication (chunk size = 3 digits, BASE = 1000)
+
+PHASE 1) Split into 3-digit chunks (right to left)
+  A chunks: 580, 27
+  B chunks: 129, 60
+
+PHASE 2) Convolution: multiply every chunk of A with every chunk of B; put each product into bucket (i+j), where i and j are the chunk distances from the right; add within buckets, no carrying yet.
+
+  bucket0 = 580*129
+          = 74820
+
+  bucket1 = 580*60 + 27*129
+          = 34800 + 3483
+          = 38283
+
+  bucket2 = 27*60
+          = 1620
+
+Raw buckets:
+  [74820, 38283, 1620]
+
+PHASE 3) Carrying (make each bucket < 1000)
+Rule: if bucket = carry*1000 + digit, keep digit and add carry to next bucket.
+
+  bucket0=74820 -> carry=74, digit=820
+    bucket0=820
+    bucket1=38283+74=38357
+
+  bucket1=38357 -> carry=38, digit=357
+    bucket1=357
+    bucket2=1620+38=1658
+
+  bucket2=1658 -> carry=1, digit=658
+    bucket2=658
+    top=1
+
+Final chunks (left to right):
+  1 | 890 | 2 | 160
+
+PHASE 4) Recombine (pad chunks to 3 digits except the first)
+  1890002160
+
+Answer:
+  33270 * 56808 = 
+\box{1890002160}
+
+
+============================================================
+AI RESPONSE
+============================================================
+
+Verdict: \box{incorrect}
+
+Summary of errors and corrections
+
+1) Chunk splitting (PHASE 1) is wrong in the transcript.
+- A = 33270 should split (right-to-left, 3-digit chunks) as A chunks = [270, 33].
+- B = 56808 should split as B chunks = [808, 56].
+The transcript instead lists A chunks = [580, 27] and B chunks = [129, 60] — incorrect.
+
+2) Convolution / buckets (PHASE 2)
+- Correct convolution with the proper chunks:
+  - bucket0 = 270 * 808 = 218160
+  - bucket1 = 270 * 56 + 33 * 808 = 15120 + 26664 = 41784
+  - bucket2 = 33 * 56 = 1848
+  Raw buckets = [218160, 41784, 1848]
+
+The transcript's raw buckets [74820, 38283, 1620] do not match the correct buckets and arise from the wrong chunks shown in PHASE1.
+
+3) Carrying (PHASE 3)
+- Carrying the correct raw buckets to make each bucket <1000:
+  - bucket0 = 218160 -> carry 218, digit 160 -> bucket0 = 160; bucket1 = 41784 + 218 = 42002
+  - bucket1 = 42002 -> carry 42, digit 2 -> bucket1 = 2; bucket2 = 1848 + 42 = 1890
+  - bucket2 = 1890 -> carry 1, digit 890 -> bucket2 = 890; top = 1
+  Final chunks (left to right): 1 | 890 | 2 | 160
+
+The transcript’s carrying steps are inconsistent: their intermediate carrying used numbers from their incorrect buckets and their listed carried buckets do not match their own earlier bucket values. Their final listed chunks (1 | 890 | 2 | 160) correspond to the correct carrying from the correct raw buckets, but the transcript’s PHASE1 and PHASE2 are wrong and internally inconsistent.
+
+4) Final answer
+- Correct product recomposed from correct chunks: 1,890,002,160.
+- The transcript’s boxed numeric answer 1890002160 matches the true product.
+- However, because the transcript contains incorrect chunk splits and inconsistent bucket/calculation steps, the work shown is not correct even though the final numeric result is right.
+
+Conclusion: The transcript contains multiple errors/inconsistencies (wrong chunking, wrong intermediate bucket values, inconsistent carrying steps). Therefore the transcript is incorrect.

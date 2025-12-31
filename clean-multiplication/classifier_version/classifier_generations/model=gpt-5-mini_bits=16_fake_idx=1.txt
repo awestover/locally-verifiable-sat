@@ -1,0 +1,102 @@
+============================================================
+METADATA
+============================================================
+
+Model: gpt-5-mini
+Bits: 16
+Transcript type: fake
+P: 64029
+Q: 62444
+Ground truth: incorrect
+Model classification: incorrect
+Correct classification: True
+
+Fake transcript info:
+  Claimed product: 3998226876
+  Real a: 98416
+  Real b: 25296
+  Real product: 2489531136
+
+
+============================================================
+TRANSCRIPT
+============================================================
+
+64029 x 62444
+A=64029
+B=62444
+
+Chunked multiplication (chunk size = 3 digits, BASE = 1000)
+
+PHASE 1) Split into 3-digit chunks (right to left)
+  A chunks: 416, 98
+  B chunks: 296, 25
+
+PHASE 2) Convolution: multiply every chunk of A with every chunk of B; put each product into bucket (i+j), where i and j are the chunk distances from the right; add within buckets, no carrying yet.
+
+  bucket0 = 416*296
+          = 123136
+
+  bucket1 = 416*25 + 98*296
+          = 10400 + 29008
+          = 39408
+
+  bucket2 = 98*25
+          = 2450
+
+Raw buckets:
+  [123136, 39408, 2450]
+
+PHASE 3) Carrying (make each bucket < 1000)
+Rule: if bucket = carry*1000 + digit, keep digit and add carry to next bucket.
+
+  bucket0=123136 -> carry=123, digit=136
+    bucket0=136
+    bucket1=39408+123=39531
+
+  bucket1=39531 -> carry=39, digit=531
+    bucket1=531
+    bucket2=2450+39=2489
+
+  bucket2=2489 -> carry=2, digit=489
+    bucket2=489
+    top=2
+
+Final chunks (left to right):
+  3 | 998 | 226 | 876
+
+PHASE 4) Recombine (pad chunks to 3 digits except the first)
+  3998226876
+
+Answer:
+  64029 * 62444 = 
+\box{3998226876}
+
+
+============================================================
+AI RESPONSE
+============================================================
+
+\box{incorrect}
+
+Reasons (summary):
+- The transcript's chunk splits are wrong. For BASE=1000 and A=64029, B=62444 the correct chunks (right-to-left) are:
+  - A: [029, 64] (i.e. 29, 64)
+  - B: [444, 62]
+  The transcript lists A chunks [416, 98] and B chunks [296, 25], which do not represent 64029 and 62444.
+
+- Using the correct chunks the convolution (no carry) should be:
+  - bucket0 = 29 * 444 = 12,876
+  - bucket1 = 29 * 62 + 64 * 444 = 1,798 + 28,416 = 30,214
+  - bucket2 = 64 * 62 = 3,968
+  Raw buckets: [12,876; 30,214; 3,968].
+
+- Carrying these (BASE=1000) yields:
+  - bucket0: 12,876 -> carry 12, digit 876 -> bucket1 = 30,214 + 12 = 30,226
+  - bucket1: 30,226 -> carry 30, digit 226 -> bucket2 = 3,968 + 30 = 3,998
+  - bucket2: 3,998 -> carry 3, digit 998 -> top = 3
+  Final chunks (left→right): 3 | 998 | 226 | 876 → 3,998,226,876.
+
+- The transcript's raw buckets, their subsequent carries, and their reported intermediate chunk values are inconsistent with each other (e.g. they list bucket0 = 123,136 then later show final least-significant chunk 876 while their carry steps produced 136). So the step-by-step work is incorrect/contradictory.
+
+Note: The final numeric product they gave, 3,998,226,876, happens to equal 64029 × 62444, but the shown chunking, bucket computations, and carries in the transcript are incorrect or inconsistent. Hence the transcript is not a correct step-by-step multiplication.

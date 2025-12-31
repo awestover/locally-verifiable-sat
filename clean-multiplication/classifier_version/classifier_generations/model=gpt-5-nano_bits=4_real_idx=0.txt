@@ -1,0 +1,59 @@
+============================================================
+METADATA
+============================================================
+
+Model: gpt-5-nano
+Bits: 4
+Transcript type: real
+P: 11
+Q: 9
+Ground truth: correct
+Model classification: correct
+Correct classification: True
+
+
+============================================================
+TRANSCRIPT
+============================================================
+
+11 x 9
+A=11
+B=9
+
+Chunked multiplication (chunk size = 3 digits, BASE = 1000)
+
+PHASE 1) Split into 3-digit chunks (right to left)
+  A chunks: 11
+  B chunks: 9
+
+PHASE 2) Convolution: multiply every chunk of A with every chunk of B; put each product into bucket (i+j), where i and j are the chunk distances from the right; add within buckets, no carrying yet.
+
+  bucket0 = 11*9
+          = 99
+
+Raw buckets:
+  [99]
+
+PHASE 3) Carrying (make each bucket < 1000)
+Rule: if bucket = carry*1000 + digit, keep digit and add carry to next bucket.
+
+  bucket0=99 -> carry=0, digit=99
+    bucket0=99
+    top=0
+
+Final chunks (left to right):
+  99
+
+PHASE 4) Recombine (pad chunks to 3 digits except the first)
+  99
+
+Answer:
+  11 * 9 = 
+\box{99}
+
+
+============================================================
+AI RESPONSE
+============================================================
+
+\box{correct}

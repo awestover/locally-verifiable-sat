@@ -1,0 +1,65 @@
+============================================================
+METADATA
+============================================================
+
+Model: gpt-5-nano
+Bits: 8
+Transcript type: fake
+P: 134
+Q: 175
+Ground truth: incorrect
+Model classification: incorrect
+Correct classification: True
+
+Fake transcript info:
+  Claimed product: 23450
+  Real a: 894
+  Real b: 870
+  Real product: 777780
+
+
+============================================================
+TRANSCRIPT
+============================================================
+
+134 x 175
+A=134
+B=175
+
+Chunked multiplication (chunk size = 3 digits, BASE = 1000)
+
+PHASE 1) Split into 3-digit chunks (right to left)
+  A chunks: 894
+  B chunks: 870
+
+PHASE 2) Convolution: multiply every chunk of A with every chunk of B; put each product into bucket (i+j), where i and j are the chunk distances from the right; add within buckets, no carrying yet.
+
+  bucket0 = 894*870
+          = 777780
+
+Raw buckets:
+  [777780]
+
+PHASE 3) Carrying (make each bucket < 1000)
+Rule: if bucket = carry*1000 + digit, keep digit and add carry to next bucket.
+
+  bucket0=777780 -> carry=777, digit=780
+    bucket0=780
+    top=777
+
+Final chunks (left to right):
+  23 | 450
+
+PHASE 4) Recombine (pad chunks to 3 digits except the first)
+  23450
+
+Answer:
+  134 * 175 = 
+\box{23450}
+
+
+============================================================
+AI RESPONSE
+============================================================
+
+\box{incorrect}

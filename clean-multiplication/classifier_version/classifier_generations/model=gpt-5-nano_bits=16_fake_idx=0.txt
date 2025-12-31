@@ -1,0 +1,80 @@
+============================================================
+METADATA
+============================================================
+
+Model: gpt-5-nano
+Bits: 16
+Transcript type: fake
+P: 60743
+Q: 49783
+Ground truth: incorrect
+Model classification: incorrect
+Correct classification: True
+
+Fake transcript info:
+  Claimed product: 3023968769
+  Real a: 63421
+  Real b: 90139
+  Real product: 5716705519
+
+
+============================================================
+TRANSCRIPT
+============================================================
+
+60743 x 49783
+A=60743
+B=49783
+
+Chunked multiplication (chunk size = 3 digits, BASE = 1000)
+
+PHASE 1) Split into 3-digit chunks (right to left)
+  A chunks: 421, 63
+  B chunks: 139, 90
+
+PHASE 2) Convolution: multiply every chunk of A with every chunk of B; put each product into bucket (i+j), where i and j are the chunk distances from the right; add within buckets, no carrying yet.
+
+  bucket0 = 421*139
+          = 58519
+
+  bucket1 = 421*90 + 63*139
+          = 37890 + 8757
+          = 46647
+
+  bucket2 = 63*90
+          = 5670
+
+Raw buckets:
+  [58519, 46647, 5670]
+
+PHASE 3) Carrying (make each bucket < 1000)
+Rule: if bucket = carry*1000 + digit, keep digit and add carry to next bucket.
+
+  bucket0=58519 -> carry=58, digit=519
+    bucket0=519
+    bucket1=46647+58=46705
+
+  bucket1=46705 -> carry=46, digit=705
+    bucket1=705
+    bucket2=5670+46=5716
+
+  bucket2=5716 -> carry=5, digit=716
+    bucket2=716
+    top=5
+
+Final chunks (left to right):
+  3 | 23 | 968 | 769
+
+PHASE 4) Recombine (pad chunks to 3 digits except the first)
+  3023968769
+
+Answer:
+  60743 * 49783 = 
+\box{3023968769}
+
+
+============================================================
+AI RESPONSE
+============================================================
+
+\box{incorrect}

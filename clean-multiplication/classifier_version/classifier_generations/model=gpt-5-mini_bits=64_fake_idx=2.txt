@@ -1,0 +1,199 @@
+============================================================
+METADATA
+============================================================
+
+Model: gpt-5-mini
+Bits: 64
+Transcript type: fake
+P: 11813758629809274824
+Q: 10457963877854333629
+Ground truth: incorrect
+Model classification: incorrect
+Correct classification: True
+
+Fake transcript info:
+  Claimed product: 123547861012235302791292557986246256296
+  Real a: 32349712852709052528
+  Real b: 87068124697900967152
+  Real product: 2816628832600961408425550154556770560256
+
+
+============================================================
+TRANSCRIPT
+============================================================
+
+11813758629809274824 x 10457963877854333629
+A=11813758629809274824
+B=10457963877854333629
+
+Chunked multiplication (chunk size = 3 digits, BASE = 1000)
+
+PHASE 1) Split into 3-digit chunks (right to left)
+  A chunks: 528, 52, 709, 852, 712, 349, 32
+  B chunks: 152, 967, 900, 697, 124, 68, 87
+
+PHASE 2) Convolution: multiply every chunk of A with every chunk of B; put each product into bucket (i+j), where i and j are the chunk distances from the right; add within buckets, no carrying yet.
+
+  bucket0 = 528*152
+          = 80256
+
+  bucket1 = 528*967 + 52*152
+          = 510576 + 7904
+          = 518480
+
+  bucket2 = 528*900 + 52*967 + 709*152
+          = 475200 + 50284 + 107768
+          = 525484 + 107768
+          = 633252
+
+  bucket3 = 528*697 + 52*900 + 709*967 + 852*152
+          = 368016 + 46800 + 685603 + 129504
+          = 414816 + 685603 + 129504
+          = 1100419 + 129504
+          = 1229923
+
+  bucket4 = 528*124 + 52*697 + 709*900 + 852*967 + 712*152
+          = 65472 + 36244 + 638100 + 823884 + 108224
+          = 101716 + 638100 + 823884 + 108224
+          = 739816 + 823884 + 108224
+          = 1563700 + 108224
+          = 1671924
+
+  bucket5 = 528*68 + 52*124 + 709*697 + 852*900 + 712*967 + 349*152
+          = 35904 + 6448 + 494173 + 766800 + 688504 + 53048
+          = 42352 + 494173 + 766800 + 688504 + 53048
+          = 536525 + 766800 + 688504 + 53048
+          = 1303325 + 688504 + 53048
+          = 1991829 + 53048
+          = 2044877
+
+  bucket6 = 528*87 + 52*68 + 709*124 + 852*697 + 712*900 + 349*967 + 32*152
+          = 45936 + 3536 + 87916 + 593844 + 640800 + 337483 + 4864
+          = 49472 + 87916 + 593844 + 640800 + 337483 + 4864
+          = 137388 + 593844 + 640800 + 337483 + 4864
+          = 731232 + 640800 + 337483 + 4864
+          = 1372032 + 337483 + 4864
+          = 1709515 + 4864
+          = 1714379
+
+  bucket7 = 52*87 + 709*68 + 852*124 + 712*697 + 349*900 + 32*967
+          = 4524 + 48212 + 105648 + 496264 + 314100 + 30944
+          = 52736 + 105648 + 496264 + 314100 + 30944
+          = 158384 + 496264 + 314100 + 30944
+          = 654648 + 314100 + 30944
+          = 968748 + 30944
+          = 999692
+
+  bucket8 = 709*87 + 852*68 + 712*124 + 349*697 + 32*900
+          = 61683 + 57936 + 88288 + 243253 + 28800
+          = 119619 + 88288 + 243253 + 28800
+          = 207907 + 243253 + 28800
+          = 451160 + 28800
+          = 479960
+
+  bucket9 = 852*87 + 712*68 + 349*124 + 32*697
+          = 74124 + 48416 + 43276 + 22304
+          = 122540 + 43276 + 22304
+          = 165816 + 22304
+          = 188120
+
+  bucket10 = 712*87 + 349*68 + 32*124
+          = 61944 + 23732 + 3968
+          = 85676 + 3968
+          = 89644
+
+  bucket11 = 349*87 + 32*68
+          = 30363 + 2176
+          = 32539
+
+  bucket12 = 32*87
+          = 2784
+
+Raw buckets:
+  [80256, 518480, 633252, 1229923, 1671924, 2044877, 1714379, 999692, 479960, 188120, 89644, 32539, 2784]
+
+PHASE 3) Carrying (make each bucket < 1000)
+Rule: if bucket = carry*1000 + digit, keep digit and add carry to next bucket.
+
+  bucket0=80256 -> carry=80, digit=256
+    bucket0=256
+    bucket1=518480+80=518560
+
+  bucket1=518560 -> carry=518, digit=560
+    bucket1=560
+    bucket2=633252+518=633770
+
+  bucket2=633770 -> carry=633, digit=770
+    bucket2=770
+    bucket3=1229923+633=1230556
+
+  bucket3=1230556 -> carry=1230, digit=556
+    bucket3=556
+    bucket4=1671924+1230=1673154
+
+  bucket4=1673154 -> carry=1673, digit=154
+    bucket4=154
+    bucket5=2044877+1673=2046550
+
+  bucket5=2046550 -> carry=2046, digit=550
+    bucket5=550
+    bucket6=1714379+2046=1716425
+
+  bucket6=1716425 -> carry=1716, digit=425
+    bucket6=425
+    bucket7=999692+1716=1001408
+
+  bucket7=1001408 -> carry=1001, digit=408
+    bucket7=408
+    bucket8=479960+1001=480961
+
+  bucket8=480961 -> carry=480, digit=961
+    bucket8=961
+    bucket9=188120+480=188600
+
+  bucket9=188600 -> carry=188, digit=600
+    bucket9=600
+    bucket10=89644+188=89832
+
+  bucket10=89832 -> carry=89, digit=832
+    bucket10=832
+    bucket11=32539+89=32628
+
+  bucket11=32628 -> carry=32, digit=628
+    bucket11=628
+    bucket12=2784+32=2816
+
+  bucket12=2816 -> carry=2, digit=816
+    bucket12=816
+    top=2
+
+Final chunks (left to right):
+  123 | 547 | 861 | 12 | 235 | 302 | 791 | 292 | 557 | 986 | 246 | 256 | 296
+
+PHASE 4) Recombine (pad chunks to 3 digits except the first)
+  123547861012235302791292557986246256296
+
+Answer:
+  11813758629809274824 * 10457963877854333629 = 
+\box{123547861012235302791292557986246256296}
+
+
+============================================================
+AI RESPONSE
+============================================================
+
+Verdict: \box{incorrect}
+
+Why:
+- Phase 1 (chunking) is wrong. For 3-digit chunks (right-to-left) the correct chunks are:
+  - A = 11813758629809274824 -> chunks (LS-first): [824, 274, 809, 629, 758, 813, 11]
+  - B = 10457963877854333629 -> chunks (LS-first): [629, 333, 854, 877, 638, 457, 10]
+  The transcript's chunk lists ([528, 52, 709, 852, 712, 349, 32] and [152, 967, 900, 697, 124, 68, 87]) do not match the original numbers.
+
+- Because the chunks are wrong, every subsequent step (convolution buckets and carries) is operating on the wrong data. For example:
+  - Correct bucket0 (least-significant bucket) should be A_chunk0 * B_chunk0 = 824 * 629 = 518,296.
+  - The transcript's bucket0 is 528 * 152 = 80,256 — totally different.
+
+- Since buckets are incorrect from the start, the carries and the final recombination are invalid and the final product is not the product of the given original numbers.
+
+Therefore the transcript contains errors.

@@ -1,0 +1,71 @@
+============================================================
+METADATA
+============================================================
+
+Model: gpt-5-mini
+Bits: 8
+Transcript type: fake
+P: 154
+Q: 250
+Ground truth: incorrect
+Model classification: incorrect
+Correct classification: True
+
+Fake transcript info:
+  Claimed product: 38500
+  Real a: 420
+  Real b: 765
+  Real product: 321300
+
+
+============================================================
+TRANSCRIPT
+============================================================
+
+154 x 250
+A=154
+B=250
+
+Chunked multiplication (chunk size = 3 digits, BASE = 1000)
+
+PHASE 1) Split into 3-digit chunks (right to left)
+  A chunks: 420
+  B chunks: 765
+
+PHASE 2) Convolution: multiply every chunk of A with every chunk of B; put each product into bucket (i+j), where i and j are the chunk distances from the right; add within buckets, no carrying yet.
+
+  bucket0 = 420*765
+          = 321300
+
+Raw buckets:
+  [321300]
+
+PHASE 3) Carrying (make each bucket < 1000)
+Rule: if bucket = carry*1000 + digit, keep digit and add carry to next bucket.
+
+  bucket0=321300 -> carry=321, digit=300
+    bucket0=300
+    top=321
+
+Final chunks (left to right):
+  38 | 500
+
+PHASE 4) Recombine (pad chunks to 3 digits except the first)
+  38500
+
+Answer:
+  154 * 250 = 
+\box{38500}
+
+
+============================================================
+AI RESPONSE
+============================================================
+
+\box{incorrect}
+
+Reasons:
+- Phase 1 is wrong: 154 and 250 (with chunk size 3) should give chunks A = [154], B = [250]. The transcript’s A=420 and B=765 are incorrect.
+- Given the transcript chunks, their convolution bucket0 = 420 * 765 = 321300 is computed correctly for those (wrong) chunks, and their bucket carry step (321300 -> carry 321, digit 300) is arithmetically correct. But those intermediate values do not match the original numbers.
+- The final chunks they list (38 | 500) do not follow from their buckets (which would be [321,300] -> 321300). The transcript’s carry/rewriting to 38|500 is inconsistent with its own buckets.
+- The correct method: bucket0 = 154 * 250 = 38500; carry 38 and digit 500 -> chunks [38,500] -> recombined 38500. While the final numeric answer 38500 is correct, the transcript’s chunking, bucket values, and carrying are incorrect or inconsistent.

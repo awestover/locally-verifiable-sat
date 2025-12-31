@@ -1,0 +1,71 @@
+============================================================
+METADATA
+============================================================
+
+Model: gpt-5-mini
+Bits: 8
+Transcript type: fake
+P: 235
+Q: 151
+Ground truth: incorrect
+Model classification: incorrect
+Correct classification: True
+
+Fake transcript info:
+  Claimed product: 35485
+  Real a: 625
+  Real b: 871
+  Real product: 544375
+
+
+============================================================
+TRANSCRIPT
+============================================================
+
+235 x 151
+A=235
+B=151
+
+Chunked multiplication (chunk size = 3 digits, BASE = 1000)
+
+PHASE 1) Split into 3-digit chunks (right to left)
+  A chunks: 625
+  B chunks: 871
+
+PHASE 2) Convolution: multiply every chunk of A with every chunk of B; put each product into bucket (i+j), where i and j are the chunk distances from the right; add within buckets, no carrying yet.
+
+  bucket0 = 625*871
+          = 544375
+
+Raw buckets:
+  [544375]
+
+PHASE 3) Carrying (make each bucket < 1000)
+Rule: if bucket = carry*1000 + digit, keep digit and add carry to next bucket.
+
+  bucket0=544375 -> carry=544, digit=375
+    bucket0=375
+    top=544
+
+Final chunks (left to right):
+  35 | 485
+
+PHASE 4) Recombine (pad chunks to 3 digits except the first)
+  35485
+
+Answer:
+  235 * 151 = 
+\box{35485}
+
+
+============================================================
+AI RESPONSE
+============================================================
+
+The final numeric product 35485 is correct, but the transcript contains multiple errors in the steps. Verdict: \box{incorrect}
+
+Key problems:
+- Chunk splitting is wrong: A=235 should give chunk 235 (not 625); B=151 should give 151 (not 871).
+- Convolution is wrong: with correct chunks bucket0 = 235 * 151 = 35485, but the transcript computed 625 * 871 = 544375.
+- Carrying / recombination are inconsistent: from 544375 (their raw bucket) carrying would produce chunks [544, 375] → 544375, not 35 | 485. The transcript incorrectly turns 544375 into 35 | 485.
+- Although the final numeric answer 35485 happens to be the true product, the shown chunking, multiplication, and carrying steps are erroneous.

@@ -1,0 +1,102 @@
+============================================================
+METADATA
+============================================================
+
+Model: gpt-5.2
+Bits: 16
+Transcript type: real
+P: 47563
+Q: 63547
+Ground truth: correct
+Model classification: incorrect
+Correct classification: False
+
+
+============================================================
+TRANSCRIPT
+============================================================
+
+47563 x 63547
+A=47563
+B=63547
+
+Chunked multiplication (chunk size = 3 digits, BASE = 1000)
+
+PHASE 1) Split into 3-digit chunks (right to left)
+  A chunks: 563, 47
+  B chunks: 547, 63
+
+PHASE 2) Convolution: multiply every chunk of A with every chunk of B; put each product into bucket (i+j), where i and j are the chunk distances from the right; add within buckets, no carrying yet.
+
+  bucket0 = 563*547
+          = 307961
+
+  bucket1 = 563*63 + 47*547
+          = 35469 + 25709
+          = 61178
+
+  bucket2 = 47*63
+          = 2961
+
+Raw buckets:
+  [307961, 61178, 2961]
+
+PHASE 3) Carrying (make each bucket < 1000)
+Rule: if bucket = carry*1000 + digit, keep digit and add carry to next bucket.
+
+  bucket0=307961 -> carry=307, digit=961
+    bucket0=961
+    bucket1=61178+307=61485
+
+  bucket1=61485 -> carry=61, digit=485
+    bucket1=485
+    bucket2=2961+61=3022
+
+  bucket2=3022 -> carry=3, digit=22
+    bucket2=22
+    top=3
+
+Final chunks (left to right):
+  3 | 22 | 485 | 961
+
+PHASE 4) Recombine (pad chunks to 3 digits except the first)
+  3022485961
+
+Answer:
+  47563 * 63547 = 
+\box{3022485961}
+
+
+============================================================
+AI RESPONSE
+============================================================
+
+PHASE 1 (chunking):
+- \(47563 \to [563, 47]\) and \(63547 \to [547, 63]\) in base \(1000\). This is correct.
+
+PHASE 2 (bucket products):
+- bucket0: \(563\cdot 547 = 308{,}261\), but transcript has **307,961** (error).
+- bucket1:  
+  - \(563\cdot 63 = 35{,}469\) (correct)  
+  - \(47\cdot 547 = 25{,}709\) (correct)  
+  - sum \(= 61{,}178\) (correct)
+- bucket2: \(47\cdot 63 = 2{,}961\) (correct)
+
+So the convolution is already wrong due to bucket0.
+
+PHASE 3 (carrying):
+- The carrying steps are internally consistent **with their (wrong) bucket0**, but since bucket0 is wrong, the carried result is not the true product.
+
+Correcting bucket0 would change everything:
+- True raw buckets: \([308261, 61178, 2961]\)
+- Carry:
+  - bucket0 \(308261 \to\) carry 308, digit 261; bucket1 becomes \(61178+308=61486\)
+  - bucket1 \(61486 \to\) carry 61, digit 486; bucket2 becomes \(2961+61=3022\)
+  - bucket2 \(3022 \to\) carry 3, digit 22; top 3
+- Final chunks: \(3 \mid 22 \mid 486 \mid 261\) \(\Rightarrow 3022486261\)
+
+Transcript’s final answer \(3022485961\) does not match the correct product.
+
+\[
+\boxed{\text{incorrect}}
+\]

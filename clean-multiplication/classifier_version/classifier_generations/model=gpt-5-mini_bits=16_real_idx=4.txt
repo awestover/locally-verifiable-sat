@@ -1,0 +1,88 @@
+============================================================
+METADATA
+============================================================
+
+Model: gpt-5-mini
+Bits: 16
+Transcript type: real
+P: 55110
+Q: 49966
+Ground truth: correct
+Model classification: correct
+Correct classification: True
+
+
+============================================================
+TRANSCRIPT
+============================================================
+
+55110 x 49966
+A=55110
+B=49966
+
+Chunked multiplication (chunk size = 3 digits, BASE = 1000)
+
+PHASE 1) Split into 3-digit chunks (right to left)
+  A chunks: 110, 55
+  B chunks: 966, 49
+
+PHASE 2) Convolution: multiply every chunk of A with every chunk of B; put each product into bucket (i+j), where i and j are the chunk distances from the right; add within buckets, no carrying yet.
+
+  bucket0 = 110*966
+          = 106260
+
+  bucket1 = 110*49 + 55*966
+          = 5390 + 53130
+          = 58520
+
+  bucket2 = 55*49
+          = 2695
+
+Raw buckets:
+  [106260, 58520, 2695]
+
+PHASE 3) Carrying (make each bucket < 1000)
+Rule: if bucket = carry*1000 + digit, keep digit and add carry to next bucket.
+
+  bucket0=106260 -> carry=106, digit=260
+    bucket0=260
+    bucket1=58520+106=58626
+
+  bucket1=58626 -> carry=58, digit=626
+    bucket1=626
+    bucket2=2695+58=2753
+
+  bucket2=2753 -> carry=2, digit=753
+    bucket2=753
+    top=2
+
+Final chunks (left to right):
+  2 | 753 | 626 | 260
+
+PHASE 4) Recombine (pad chunks to 3 digits except the first)
+  2753626260
+
+Answer:
+  55110 * 49966 = 
+\box{2753626260}
+
+
+============================================================
+AI RESPONSE
+============================================================
+
+Checks:
+
+- Chunking: A=55110 → (110, 55); B=49966 → (966, 49). Correct.
+- Convolution:
+  - bucket0 = 110 * 966 = 106,260. Correct.
+  - bucket1 = 110 * 49 + 55 * 966 = 5,390 + 53,130 = 58,520. Correct.
+  - bucket2 = 55 * 49 = 2,695. Correct.
+- Carrying (base 1000):
+  - bucket0: 106,260 → carry 106, digit 260 → bucket1 = 58,520 + 106 = 58,626. Correct.
+  - bucket1: 58,626 → carry 58, digit 626 → bucket2 = 2,695 + 58 = 2,753. Correct.
+  - bucket2: 2,753 → carry 2, digit 753 → top = 2. Correct.
+- Recombine chunks: 2 | 753 | 626 | 260 → 2,753,626,260. Matches direct product 55110 * 49966.
+
+Final verdict:
+\box{correct}

@@ -1,0 +1,73 @@
+============================================================
+METADATA
+============================================================
+
+Model: gpt-5-mini
+Bits: 4
+Transcript type: fake
+P: 11
+Q: 14
+Ground truth: incorrect
+Model classification: incorrect
+Correct classification: True
+
+Fake transcript info:
+  Claimed product: 154
+  Real a: 23
+  Real b: 88
+  Real product: 2024
+
+
+============================================================
+TRANSCRIPT
+============================================================
+
+11 x 14
+A=11
+B=14
+
+Chunked multiplication (chunk size = 3 digits, BASE = 1000)
+
+PHASE 1) Split into 3-digit chunks (right to left)
+  A chunks: 23
+  B chunks: 88
+
+PHASE 2) Convolution: multiply every chunk of A with every chunk of B; put each product into bucket (i+j), where i and j are the chunk distances from the right; add within buckets, no carrying yet.
+
+  bucket0 = 23*88
+          = 2024
+
+Raw buckets:
+  [2024]
+
+PHASE 3) Carrying (make each bucket < 1000)
+Rule: if bucket = carry*1000 + digit, keep digit and add carry to next bucket.
+
+  bucket0=2024 -> carry=2, digit=24
+    bucket0=24
+    top=2
+
+Final chunks (left to right):
+  154
+
+PHASE 4) Recombine (pad chunks to 3 digits except the first)
+  154
+
+Answer:
+  11 * 14 = 
+\box{154}
+
+
+============================================================
+AI RESPONSE
+============================================================
+
+The transcript contains errors — \box{incorrect}
+
+Summary of issues:
+- Chunking is wrong. With BASE = 1000 and A = 11, B = 14, the correct chunks are A = [11], B = [14]. The transcript shows A chunks = 23 and B chunks = 88, which are incorrect.
+- Because the chunks are wrong, the convolution step is wrong (they computed 23*88 = 2024 — that product is correct for those chunks but those chunks do not come from 11 and 14).
+- The carry for 2024 (2024 = 2*1000 + 24) was computed correctly, but the recombination is inconsistent: carrying would produce chunks [2, 24] → "2" + "024" = 2024, yet the transcript gives final chunks/answer 154.
+- The true correct computation with the stated BASE would be bucket0 = 11*14 = 154 and no carries, yielding final answer 154. Although the final numeric answer shown (154) happens to equal the true product, the internal steps are incorrect and inconsistent.
+
+Therefore the transcript is incorrect.

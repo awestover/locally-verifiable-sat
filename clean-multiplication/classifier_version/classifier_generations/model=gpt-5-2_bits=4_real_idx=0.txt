@@ -1,0 +1,75 @@
+============================================================
+METADATA
+============================================================
+
+Model: gpt-5.2
+Bits: 4
+Transcript type: real
+P: 11
+Q: 12
+Ground truth: correct
+Model classification: correct
+Correct classification: True
+
+
+============================================================
+TRANSCRIPT
+============================================================
+
+11 x 12
+A=11
+B=12
+
+Chunked multiplication (chunk size = 3 digits, BASE = 1000)
+
+PHASE 1) Split into 3-digit chunks (right to left)
+  A chunks: 11
+  B chunks: 12
+
+PHASE 2) Convolution: multiply every chunk of A with every chunk of B; put each product into bucket (i+j), where i and j are the chunk distances from the right; add within buckets, no carrying yet.
+
+  bucket0 = 11*12
+          = 132
+
+Raw buckets:
+  [132]
+
+PHASE 3) Carrying (make each bucket < 1000)
+Rule: if bucket = carry*1000 + digit, keep digit and add carry to next bucket.
+
+  bucket0=132 -> carry=0, digit=132
+    bucket0=132
+    top=0
+
+Final chunks (left to right):
+  132
+
+PHASE 4) Recombine (pad chunks to 3 digits except the first)
+  132
+
+Answer:
+  11 * 12 = 
+\box{132}
+
+
+============================================================
+AI RESPONSE
+============================================================
+
+PHASE 1 (chunking): With base \(1000\), both \(11\) and \(12\) are single chunks. Correct.
+
+PHASE 2 (convolution): Only one product goes to bucket0:
+\[
+11 \times 12 = 132
+\]
+Bucket0 = 132. Correct.
+
+PHASE 3 (carrying): \(132 < 1000\), so carry \(=0\), digit \(=132\). No change needed. Correct.
+
+PHASE 4 (recombine): Single chunk recombines to \(132\). Correct.
+
+The final stated result \(132\) matches the bucket computation and carrying.
+
+\[
+\boxed{\text{correct}}
+\]

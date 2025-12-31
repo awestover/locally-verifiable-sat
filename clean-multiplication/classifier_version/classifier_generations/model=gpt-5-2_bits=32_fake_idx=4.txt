@@ -1,0 +1,131 @@
+============================================================
+METADATA
+============================================================
+
+Model: gpt-5.2
+Bits: 32
+Transcript type: fake
+P: 2778097741
+Q: 2199319716
+Ground truth: incorrect
+Model classification: incorrect
+Correct classification: True
+
+Fake transcript info:
+  Claimed product: 6109925134756361556
+  Real a: 3469668492
+  Real b: 5949257183
+  Real product: 20641950198659778036
+
+
+============================================================
+TRANSCRIPT
+============================================================
+
+2778097741 x 2199319716
+A=2778097741
+B=2199319716
+
+Chunked multiplication (chunk size = 3 digits, BASE = 1000)
+
+PHASE 1) Split into 3-digit chunks (right to left)
+  A chunks: 492, 668, 469, 3
+  B chunks: 183, 257, 949, 5
+
+PHASE 2) Convolution: multiply every chunk of A with every chunk of B; put each product into bucket (i+j), where i and j are the chunk distances from the right; add within buckets, no carrying yet.
+
+  bucket0 = 492*183
+          = 90036
+
+  bucket1 = 492*257 + 668*183
+          = 126444 + 122244
+          = 248688
+
+  bucket2 = 492*949 + 668*257 + 469*183
+          = 466908 + 171676 + 85827
+          = 638584 + 85827
+          = 724411
+
+  bucket3 = 492*5 + 668*949 + 469*257 + 3*183
+          = 2460 + 633932 + 120533 + 549
+          = 636392 + 120533 + 549
+          = 756925 + 549
+          = 757474
+
+  bucket4 = 668*5 + 469*949 + 3*257
+          = 3340 + 445081 + 771
+          = 448421 + 771
+          = 449192
+
+  bucket5 = 469*5 + 3*949
+          = 2345 + 2847
+          = 5192
+
+  bucket6 = 3*5
+          = 15
+
+Raw buckets:
+  [90036, 248688, 724411, 757474, 449192, 5192, 15]
+
+PHASE 3) Carrying (make each bucket < 1000)
+Rule: if bucket = carry*1000 + digit, keep digit and add carry to next bucket.
+
+  bucket0=90036 -> carry=90, digit=36
+    bucket0=36
+    bucket1=248688+90=248778
+
+  bucket1=248778 -> carry=248, digit=778
+    bucket1=778
+    bucket2=724411+248=724659
+
+  bucket2=724659 -> carry=724, digit=659
+    bucket2=659
+    bucket3=757474+724=758198
+
+  bucket3=758198 -> carry=758, digit=198
+    bucket3=198
+    bucket4=449192+758=449950
+
+  bucket4=449950 -> carry=449, digit=950
+    bucket4=950
+    bucket5=5192+449=5641
+
+  bucket5=5641 -> carry=5, digit=641
+    bucket5=641
+    bucket6=15+5=20
+
+  bucket6=20 -> carry=0, digit=20
+    bucket6=20
+    top=0
+
+Final chunks (left to right):
+  6 | 109 | 925 | 134 | 756 | 361 | 556
+
+PHASE 4) Recombine (pad chunks to 3 digits except the first)
+  6109925134756361556
+
+Answer:
+  2778097741 * 2199319716 = 
+\box{6109925134756361556}
+
+
+============================================================
+AI RESPONSE
+============================================================
+
+PHASE 1 (chunking) has errors.
+
+- With 3-digit chunks,  
+  \(A=2778097741\) should split (right to left) as: **741, 097, 778, 2** (i.e., 2 | 778 | 097 | 741).  
+  The transcript uses **492, 668, 469, 3**, which does not correspond to \(2778097741\).
+
+- \(B=2199319716\) should split as: **716, 319, 199, 2** (i.e., 2 | 199 | 319 | 716).  
+  The transcript uses **183, 257, 949, 5**, which does not correspond to \(2199319716\).
+
+Since the chunks are not derived from the stated inputs, all subsequent bucket products/carrying/recombination are not a valid verification of \(2778097741 \times 2199319716\).
+
+Additionally, even internally:
+- After carrying, the buckets shown are: bucket0=36, bucket1=778, bucket2=659, bucket3=198, bucket4=950, bucket5=641, bucket6=20, which would recombine to **20|641|950|198|659|778|036** = **20641950198659778036**, not the transcript’s **6109925134756361556**.  
+- The “Final chunks (left to right)” line (**6 | 109 | 925 | 134 | 756 | 361 | 556**) does not match the carried bucket digits they computed.
+
+Verdict: \(\boxed{incorrect}\)

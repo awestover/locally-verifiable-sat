@@ -1,0 +1,11 @@
+============================================================
+METADATA
+============================================================
+
+Model: gpt-3.5-turbo
+Bits: 32
+Transcript type: real
+P: None
+Q: None
+
+ERROR: expected string or bytes-like object, got 'NoneType'

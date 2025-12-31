@@ -1,0 +1,75 @@
+============================================================
+METADATA
+============================================================
+
+Model: gpt-5.2
+Bits: 4
+Transcript type: fake
+P: 13
+Q: 11
+Ground truth: incorrect
+Model classification: incorrect
+Correct classification: True
+
+Fake transcript info:
+  Claimed product: 143
+  Real a: 81
+  Real b: 73
+  Real product: 5913
+
+
+============================================================
+TRANSCRIPT
+============================================================
+
+13 x 11
+A=13
+B=11
+
+Chunked multiplication (chunk size = 3 digits, BASE = 1000)
+
+PHASE 1) Split into 3-digit chunks (right to left)
+  A chunks: 81
+  B chunks: 73
+
+PHASE 2) Convolution: multiply every chunk of A with every chunk of B; put each product into bucket (i+j), where i and j are the chunk distances from the right; add within buckets, no carrying yet.
+
+  bucket0 = 81*73
+          = 5913
+
+Raw buckets:
+  [5913]
+
+PHASE 3) Carrying (make each bucket < 1000)
+Rule: if bucket = carry*1000 + digit, keep digit and add carry to next bucket.
+
+  bucket0=5913 -> carry=5, digit=913
+    bucket0=913
+    top=5
+
+Final chunks (left to right):
+  143
+
+PHASE 4) Recombine (pad chunks to 3 digits except the first)
+  143
+
+Answer:
+  13 * 11 = 
+\box{143}
+
+
+============================================================
+AI RESPONSE
+============================================================
+
+PHASE 1 (chunking): Incorrect. With chunk size 3 and base 1000, the numbers should remain as single chunks:
+- A = 13 ⇒ A chunks should be [13], not 81
+- B = 11 ⇒ B chunks should be [11], not 73
+
+PHASE 2 (convolution): Uses the wrong chunks, so the bucket product 81×73=5913 is not based on the original numbers. The correct bucket0 would be 13×11 = 143.
+
+PHASE 3 (carrying): The carry operation on 5913 is internally consistent (digit 913, carry 5), but it’s irrelevant because the starting bucket is wrong.
+
+PHASE 4 (recombine/final): “Final chunks (left to right): 143” does not match the carried result from Phase 3 (which would correspond to chunks [5, 913] ⇒ 5913). So even within their own incorrect buckets, the recombination is inconsistent.
+
+Verdict: \box{incorrect}

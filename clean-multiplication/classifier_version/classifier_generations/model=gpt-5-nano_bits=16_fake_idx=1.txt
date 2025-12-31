@@ -1,0 +1,80 @@
+============================================================
+METADATA
+============================================================
+
+Model: gpt-5-nano
+Bits: 16
+Transcript type: fake
+P: 60986
+Q: 49026
+Ground truth: incorrect
+Model classification: incorrect
+Correct classification: True
+
+Fake transcript info:
+  Claimed product: 2989899636
+  Real a: 52452
+  Real b: 36323
+  Real product: 1905213996
+
+
+============================================================
+TRANSCRIPT
+============================================================
+
+60986 x 49026
+A=60986
+B=49026
+
+Chunked multiplication (chunk size = 3 digits, BASE = 1000)
+
+PHASE 1) Split into 3-digit chunks (right to left)
+  A chunks: 452, 52
+  B chunks: 323, 36
+
+PHASE 2) Convolution: multiply every chunk of A with every chunk of B; put each product into bucket (i+j), where i and j are the chunk distances from the right; add within buckets, no carrying yet.
+
+  bucket0 = 452*323
+          = 145996
+
+  bucket1 = 452*36 + 52*323
+          = 16272 + 16796
+          = 33068
+
+  bucket2 = 52*36
+          = 1872
+
+Raw buckets:
+  [145996, 33068, 1872]
+
+PHASE 3) Carrying (make each bucket < 1000)
+Rule: if bucket = carry*1000 + digit, keep digit and add carry to next bucket.
+
+  bucket0=145996 -> carry=145, digit=996
+    bucket0=996
+    bucket1=33068+145=33213
+
+  bucket1=33213 -> carry=33, digit=213
+    bucket1=213
+    bucket2=1872+33=1905
+
+  bucket2=1905 -> carry=1, digit=905
+    bucket2=905
+    top=1
+
+Final chunks (left to right):
+  2 | 989 | 899 | 636
+
+PHASE 4) Recombine (pad chunks to 3 digits except the first)
+  2989899636
+
+Answer:
+  60986 * 49026 = 
+\box{2989899636}
+
+
+============================================================
+AI RESPONSE
+============================================================
+
+\box{incorrect}

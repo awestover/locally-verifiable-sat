@@ -1,0 +1,11 @@
+============================================================
+METADATA
+============================================================
+
+Model: gpt-5-mini
+Bits: 1024
+Transcript type: fake
+P: None
+Q: None
+
+ERROR: Error code: 400 - {'error': {'message': 'Input tokens exceed the configured limit of 272000 tokens. Your messages resulted in 1570427 tokens. Please reduce the length of the messages.', 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}

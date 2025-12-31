@@ -1,0 +1,99 @@
+============================================================
+METADATA
+============================================================
+
+Model: gpt-5-mini
+Bits: 16
+Transcript type: fake
+P: 55110
+Q: 49966
+Ground truth: incorrect
+Model classification: incorrect
+Correct classification: True
+
+Fake transcript info:
+  Claimed product: 2753626260
+  Real a: 92451
+  Real b: 31400
+  Real product: 2902961400
+
+
+============================================================
+TRANSCRIPT
+============================================================
+
+55110 x 49966
+A=55110
+B=49966
+
+Chunked multiplication (chunk size = 3 digits, BASE = 1000)
+
+PHASE 1) Split into 3-digit chunks (right to left)
+  A chunks: 451, 92
+  B chunks: 400, 31
+
+PHASE 2) Convolution: multiply every chunk of A with every chunk of B; put each product into bucket (i+j), where i and j are the chunk distances from the right; add within buckets, no carrying yet.
+
+  bucket0 = 451*400
+          = 180400
+
+  bucket1 = 451*31 + 92*400
+          = 13981 + 36800
+          = 50781
+
+  bucket2 = 92*31
+          = 2852
+
+Raw buckets:
+  [180400, 50781, 2852]
+
+PHASE 3) Carrying (make each bucket < 1000)
+Rule: if bucket = carry*1000 + digit, keep digit and add carry to next bucket.
+
+  bucket0=180400 -> carry=180, digit=400
+    bucket0=400
+    bucket1=50781+180=50961
+
+  bucket1=50961 -> carry=50, digit=961
+    bucket1=961
+    bucket2=2852+50=2902
+
+  bucket2=2902 -> carry=2, digit=902
+    bucket2=902
+    top=2
+
+Final chunks (left to right):
+  2 | 753 | 626 | 260
+
+PHASE 4) Recombine (pad chunks to 3 digits except the first)
+  2753626260
+
+Answer:
+  55110 * 49966 = 
+\box{2753626260}
+
+
+============================================================
+AI RESPONSE
+============================================================
+
+Verdict: \box{incorrect}
+
+Why:
+- Phase 1 (chunking) is wrong. For A = 55110 the 3-digit chunks (right-to-left) should be [110, 55], not [451, 92]. For B = 49966 the chunks should be [966, 49], not [400, 31].
+- Using the correct chunks, the convolution is:
+  - bucket0 = 110 * 966 = 106,260
+  - bucket1 = 110 * 49 + 55 * 966 = 5,390 + 53,130 = 58,520
+  - bucket2 = 55 * 49 = 2,695
+  Raw buckets: [106,260; 58,520; 2,695]
+- Carrying (base 1000):
+  - bucket0: 106,260 -> carry 106, digit 260; bucket1 = 58,520 + 106 = 58,626
+  - bucket1: 58,626 -> carry 58, digit 626; bucket2 = 2,695 + 58 = 2,753
+  - bucket2: 2,753 -> carry 2, digit 753; top = 2
+  Final chunks (left→right): 2 | 753 | 626 | 260 → 2,753,626,260
+- The numeric final product 2,753,626,260 is correct for 55110 × 49966, but the transcript contains multiple errors:
+  - incorrect chunk splits,
+  - wrong intermediate products (they computed products consistent with their wrong chunks),
+  - and a clear internal inconsistency: the carried values they show do not match the raw buckets they listed, yet their final printed chunks are different again.
+
+Because the steps contain errors and inconsistencies (even though the final numeric answer happened to be correct), the transcript is incorrect.

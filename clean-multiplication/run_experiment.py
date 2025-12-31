@@ -3,12 +3,12 @@
 Generate random primes and ask GPT to multiply them by hand.
 """
 
-import os
+import asyncio
 import random
 import re
+import sys
 from pathlib import Path
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from openai import OpenAI
+from openai import AsyncOpenAI
 import matplotlib.pyplot as plt
 
 GENERATIONS_DIR = Path(__file__).parent / "generations"
@@ -105,10 +105,8 @@ MODELS = [
 # Models that support reasoning_effort parameter
 REASONING_MODELS = {"gpt-5.2", "gpt-5-mini", "gpt-5-nano", "gpt-5", "gpt-5.1"}
 
-def query_gpt(p1, p2, example_content, model="gpt-5.2"):
+async def query_gpt(client, p1, p2, example_content, model="gpt-5.2"):
     """Ask GPT to multiply two numbers by hand. Returns (prompt, response)."""
-    client = OpenAI()
-
     prompt = f"""Multiply these two numbers using block multiplication (break into chunks and combine partial products). Minimize text - just show the numbers and calculations. Your answer will be automatically graded.
 
 <example>
@@ -128,45 +126,46 @@ Put your final answer in \\box{{}} at the bottom."""
     if model in REASONING_MODELS:
         kwargs["reasoning_effort"] = "medium"
 
-    response = client.chat.completions.create(**kwargs)
+    response = await client.chat.completions.create(**kwargs)
 
     return prompt, response.choices[0].message.content
 
-def process_single_task(task):
+async def process_single_task(client, semaphore, task):
     """Process a single multiplication task. Returns (model, bits, idx, is_correct, result_dict)."""
     model, bits, idx, p1, p2, example_content = task
 
-    try:
-        prompt, response = query_gpt(p1, p2, example_content, model=model)
+    async with semaphore:
+        try:
+            prompt, response = await query_gpt(client, p1, p2, example_content, model=model)
 
-        # Extract and validate the model's answer
-        expected_product = p1 * p2
-        model_answer = extract_boxed_answer(response)
-        is_correct = model_answer == expected_product
+            # Extract and validate the model's answer
+            expected_product = p1 * p2
+            model_answer = extract_boxed_answer(response)
+            is_correct = model_answer == expected_product
 
-        result = {
-            'success': True,
-            'model': model,
-            'p1': p1,
-            'p2': p2,
-            'expected_product': expected_product,
-            'model_answer': model_answer,
-            'is_correct': is_correct,
-            'prompt': prompt,
-            'response': response
-        }
-        return model, bits, idx, is_correct, result
+            result = {
+                'success': True,
+                'model': model,
+                'p1': p1,
+                'p2': p2,
+                'expected_product': expected_product,
+                'model_answer': model_answer,
+                'is_correct': is_correct,
+                'prompt': prompt,
+                'response': response
+            }
+            return model, bits, idx, is_correct, result
 
-    except Exception as e:
-        result = {
-            'success': False,
-            'model': model,
-            'p1': p1,
-            'p2': p2,
-            'expected_product': p1 * p2,
-            'error': str(e)
-        }
-        return model, bits, idx, False, result
+        except Exception as e:
+            result = {
+                'success': False,
+                'model': model,
+                'p1': p1,
+                'p2': p2,
+                'expected_product': p1 * p2,
+                'error': str(e)
+            }
+            return model, bits, idx, False, result
 
 def save_result(model, bits, idx, result):
     """Save a single result to file."""
@@ -244,12 +243,12 @@ def plot_results(results_by_model_bits, bit_lengths):
     print(f"\nPlot saved to {plot_path}")
     return plot_path
 
-def run_experiment(R=2, test_mode=False, max_workers=50):
-    """Run the multiplication experiment with parallel requests across all models."""
+async def run_experiment(R=2, test_mode=False, max_concurrent=150):
+    """Run the multiplication experiment with async requests across all models."""
     GENERATIONS_DIR.mkdir(exist_ok=True)
 
-    # L = 2^i for i in range(2, 12) gives L = 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048
-    bit_lengths = [2**i for i in range(2, 12)]
+    # L = 2^i for i in range(2, 11) gives L = 4, 8, 16, 32, 64, 128, 256, 512, 1024
+    bit_lengths = [2**i for i in range(2, 11)]
 
     if test_mode:
         R = 1
@@ -258,7 +257,7 @@ def run_experiment(R=2, test_mode=False, max_workers=50):
     # Load example content once
     example_content = EXAMPLE_FILE.read_text()
 
-    # Generate all tasks upfront - for all models in parallel
+    # Generate all tasks upfront - for all models
     tasks = []
     for model in MODELS:
         for bits in bit_lengths:
@@ -268,30 +267,35 @@ def run_experiment(R=2, test_mode=False, max_workers=50):
                 tasks.append((model, bits, i, p1, p2, example_content))
 
     print(f"Generated {len(tasks)} tasks ({len(MODELS)} models × {len(bit_lengths)} bit lengths × {R} runs)", flush=True)
-    print(f"Running with {max_workers} parallel workers...\n", flush=True)
+    print(f"Running with {max_concurrent} max concurrent requests...\n", flush=True)
+
+    # Create async client and semaphore for concurrency limiting
+    client = AsyncOpenAI()
+    semaphore = asyncio.Semaphore(max_concurrent)
 
     # Track results by (model, bits) tuple
     results_by_model_bits = {}
+    completed = 0
+    total = len(tasks)
 
-    # Process all tasks in parallel
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        future_to_task = {executor.submit(process_single_task, task): task for task in tasks}
+    async def process_and_track(task):
+        nonlocal completed
+        model, bits, idx, is_correct, result = await process_single_task(client, semaphore, task)
 
-        completed = 0
-        for future in as_completed(future_to_task):
-            model, bits, idx, is_correct, result = future.result()
+        key = (model, bits)
+        if key not in results_by_model_bits:
+            results_by_model_bits[key] = []
+        results_by_model_bits[key].append(is_correct)
 
-            key = (model, bits)
-            if key not in results_by_model_bits:
-                results_by_model_bits[key] = []
-            results_by_model_bits[key].append(is_correct)
+        # Save result to file
+        save_result(model, bits, idx, result)
 
-            # Save result to file
-            save_result(model, bits, idx, result)
+        completed += 1
+        status = "✓" if is_correct else "✗"
+        print(f"[{completed}/{total}] {model} bits={bits}: {status}", flush=True)
 
-            completed += 1
-            status = "✓" if is_correct else "✗"
-            print(f"[{completed}/{len(tasks)}] {model} bits={bits}: {status}", flush=True)
+    # Run all tasks concurrently (semaphore limits actual concurrency)
+    await asyncio.gather(*[process_and_track(task) for task in tasks])
 
     # Print summary
     print("\n" + "=" * 60)
@@ -312,6 +316,5 @@ def run_experiment(R=2, test_mode=False, max_workers=50):
     plot_results(results_by_model_bits, bit_lengths)
 
 if __name__ == "__main__":
-    import sys
     test_mode = "--test" in sys.argv
-    run_experiment(R=2, test_mode=test_mode)
+    asyncio.run(run_experiment(R=2, test_mode=test_mode))

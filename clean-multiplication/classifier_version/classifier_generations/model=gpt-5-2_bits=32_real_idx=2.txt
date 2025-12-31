@@ -1,0 +1,152 @@
+============================================================
+METADATA
+============================================================
+
+Model: gpt-5.2
+Bits: 32
+Transcript type: real
+P: 2643609156
+Q: 2491526008
+Ground truth: correct
+Model classification: correct
+Correct classification: True
+
+
+============================================================
+TRANSCRIPT
+============================================================
+
+2643609156 x 2491526008
+A=2643609156
+B=2491526008
+
+Chunked multiplication (chunk size = 3 digits, BASE = 1000)
+
+PHASE 1) Split into 3-digit chunks (right to left)
+  A chunks: 156, 609, 643, 2
+  B chunks: 8, 526, 491, 2
+
+PHASE 2) Convolution: multiply every chunk of A with every chunk of B; put each product into bucket (i+j), where i and j are the chunk distances from the right; add within buckets, no carrying yet.
+
+  bucket0 = 156*8
+          = 1248
+
+  bucket1 = 156*526 + 609*8
+          = 82056 + 4872
+          = 86928
+
+  bucket2 = 156*491 + 609*526 + 643*8
+          = 76596 + 320334 + 5144
+          = 396930 + 5144
+          = 402074
+
+  bucket3 = 156*2 + 609*491 + 643*526 + 2*8
+          = 312 + 299019 + 338218 + 16
+          = 299331 + 338218 + 16
+          = 637549 + 16
+          = 637565
+
+  bucket4 = 609*2 + 643*491 + 2*526
+          = 1218 + 315713 + 1052
+          = 316931 + 1052
+          = 317983
+
+  bucket5 = 643*2 + 2*491
+          = 1286 + 982
+          = 2268
+
+  bucket6 = 2*2
+          = 4
+
+Raw buckets:
+  [1248, 86928, 402074, 637565, 317983, 2268, 4]
+
+PHASE 3) Carrying (make each bucket < 1000)
+Rule: if bucket = carry*1000 + digit, keep digit and add carry to next bucket.
+
+  bucket0=1248 -> carry=1, digit=248
+    bucket0=248
+    bucket1=86928+1=86929
+
+  bucket1=86929 -> carry=86, digit=929
+    bucket1=929
+    bucket2=402074+86=402160
+
+  bucket2=402160 -> carry=402, digit=160
+    bucket2=160
+    bucket3=637565+402=637967
+
+  bucket3=637967 -> carry=637, digit=967
+    bucket3=967
+    bucket4=317983+637=318620
+
+  bucket4=318620 -> carry=318, digit=620
+    bucket4=620
+    bucket5=2268+318=2586
+
+  bucket5=2586 -> carry=2, digit=586
+    bucket5=586
+    bucket6=4+2=6
+
+  bucket6=6 -> carry=0, digit=6
+    bucket6=6
+    top=0
+
+Final chunks (left to right):
+  6 | 586 | 620 | 967 | 160 | 929 | 248
+
+PHASE 4) Recombine (pad chunks to 3 digits except the first)
+  6586620967160929248
+
+Answer:
+  2643609156 * 2491526008 = 
+\box{6586620967160929248}
+
+
+============================================================
+AI RESPONSE
+============================================================
+
+PHASE 1 (chunking):
+- \(A=2643609156 \rightarrow\) chunks \( [156,609,643,2]\) (since \(2|643|609|156\)) correct.
+- \(B=2491526008 \rightarrow\) should be chunks \( [8,26,491,2]\) (since \(2|491|526|008\) is wrong: the middle chunk is **526** but the number has **526?** actually \(2491526008 = 2\,491\,526\,008\), so chunks are \(008,526,491,2\) i.e. \([8,526,491,2]\) correct.  
+
+So chunking is correct.
+
+PHASE 2 (convolution):
+Check each bucket (base 1000, indices from right starting at 0):
+
+- bucket0: \(156\cdot 8=1248\) correct.
+- bucket1: \(156\cdot526 + 609\cdot8 = 82056+4872=86928\) correct.
+- bucket2: \(156\cdot491 + 609\cdot526 + 643\cdot8 = 76596+320334+5144=402074\) correct.
+- bucket3: \(156\cdot2 + 609\cdot491 + 643\cdot526 + 2\cdot8\).
+  - \(609\cdot491=298{,}? = 609(500-9)=304500-5481=299019\) correct.
+  - \(643\cdot526=643(500+26)=321500+16718=338218\) correct.
+  - Total \(312+299019+338218+16=637565\) correct.
+- bucket4: \(609\cdot2 + 643\cdot491 + 2\cdot526\).
+  - \(643\cdot491=643(500-9)=321500-5787=315713\) correct.
+  - Total \(1218+315713+1052=317983\) correct.
+- bucket5: \(643\cdot2 + 2\cdot491 = 1286+982=2268\) correct.
+- bucket6: \(2\cdot2=4\) correct.
+
+Raw buckets correct.
+
+PHASE 3 (carrying base 1000):
+- bucket0 \(1248 \to\) carry 1, digit 248; bucket1 \(86928+1=86929\) correct.
+- bucket1 \(86929 \to\) carry 86, digit 929; bucket2 \(402074+86=402160\) correct.
+- bucket2 \(402160 \to\) carry 402, digit 160; bucket3 \(637565+402=637967\) correct.
+- bucket3 \(637967 \to\) carry 637, digit 967; bucket4 \(317983+637=318620\) correct.
+- bucket4 \(318620 \to\) carry 318, digit 620; bucket5 \(2268+318=2586\) correct.
+- bucket5 \(2586 \to\) carry 2, digit 586; bucket6 \(4+2=6\) correct.
+- bucket6 \(6 \to\) digit 6 correct.
+
+Final chunks \(6|586|620|967|160|929|248\) correct.
+
+PHASE 4 (recombine):
+\(6\,586\,620\,967\,160\,929\,248\) matches the written \(6586620967160929248\) correct.
+
+Independent check (quick sanity): the product magnitude \(2.64\times10^9 \cdot 2.49\times10^9 \approx 6.57\times10^{18}\), consistent with \(6.5866\times10^{18}\).
+
+\[
+\boxed{correct}
+\]

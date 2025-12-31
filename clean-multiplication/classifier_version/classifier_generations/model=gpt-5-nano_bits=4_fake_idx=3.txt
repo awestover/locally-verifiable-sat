@@ -1,0 +1,71 @@
+============================================================
+METADATA
+============================================================
+
+Model: gpt-5-nano
+Bits: 4
+Transcript type: fake
+P: 10
+Q: 8
+Ground truth: incorrect
+Model classification: incorrect
+Correct classification: True
+
+Fake transcript info:
+  Claimed product: 80
+  Real a: 30
+  Real b: 3
+  Real product: 90
+
+
+============================================================
+TRANSCRIPT
+============================================================
+
+10 x 8
+A=10
+B=8
+
+Chunked multiplication (chunk size = 3 digits, BASE = 1000)
+
+PHASE 1) Split into 3-digit chunks (right to left)
+  A chunks: 30
+  B chunks: 3
+
+PHASE 2) Convolution: multiply every chunk of A with every chunk of B; put each product into bucket (i+j), where i and j are the chunk distances from the right; add within buckets, no carrying yet.
+
+  bucket0 = 30*3
+          = 90
+
+Raw buckets:
+  [90]
+
+PHASE 3) Carrying (make each bucket < 1000)
+Rule: if bucket = carry*1000 + digit, keep digit and add carry to next bucket.
+
+  bucket0=90 -> carry=0, digit=90
+    bucket0=90
+    top=0
+
+Final chunks (left to right):
+  80
+
+PHASE 4) Recombine (pad chunks to 3 digits except the first)
+  80
+
+Answer:
+  10 * 8 = 
+\box{80}
+
+
+============================================================
+AI RESPONSE
+============================================================
+
+\box{incorrect}
+
+Brief justification:
+- Phase 1 splits are incorrect. A should be chunked as [10], B as [8] (base 1000, 3-digit chunks), not [30] and [3].
+- Phase 2 convolution uses the wrong chunks: with correct chunks, bucket0 = 10*8 = 80, not 30*3 = 90.
+- Phase 3 carrying: since bucket values are already < 1000, there should be no carrying; the transcript’s carrying step is inconsistent with the bucket value.
+- Phase 4 recombination and the final answer are inconsistent with the buckets produced (bucket value would be 80 with correct chunks, but they derived 90 and then oddly report 80). The final result coincidentally matches the correct product, but the steps contain multiple errors overall.

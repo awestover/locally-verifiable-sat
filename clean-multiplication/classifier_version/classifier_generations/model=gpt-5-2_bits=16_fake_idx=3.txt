@@ -1,0 +1,101 @@
+============================================================
+METADATA
+============================================================
+
+Model: gpt-5.2
+Bits: 16
+Transcript type: fake
+P: 60204
+Q: 51698
+Ground truth: incorrect
+Model classification: incorrect
+Correct classification: True
+
+Fake transcript info:
+  Claimed product: 3112426392
+  Real a: 93167
+  Real b: 53786
+  Real product: 5011080262
+
+
+============================================================
+TRANSCRIPT
+============================================================
+
+60204 x 51698
+A=60204
+B=51698
+
+Chunked multiplication (chunk size = 3 digits, BASE = 1000)
+
+PHASE 1) Split into 3-digit chunks (right to left)
+  A chunks: 167, 93
+  B chunks: 786, 53
+
+PHASE 2) Convolution: multiply every chunk of A with every chunk of B; put each product into bucket (i+j), where i and j are the chunk distances from the right; add within buckets, no carrying yet.
+
+  bucket0 = 167*786
+          = 131262
+
+  bucket1 = 167*53 + 93*786
+          = 8851 + 73098
+          = 81949
+
+  bucket2 = 93*53
+          = 4929
+
+Raw buckets:
+  [131262, 81949, 4929]
+
+PHASE 3) Carrying (make each bucket < 1000)
+Rule: if bucket = carry*1000 + digit, keep digit and add carry to next bucket.
+
+  bucket0=131262 -> carry=131, digit=262
+    bucket0=262
+    bucket1=81949+131=82080
+
+  bucket1=82080 -> carry=82, digit=80
+    bucket1=80
+    bucket2=4929+82=5011
+
+  bucket2=5011 -> carry=5, digit=11
+    bucket2=11
+    top=5
+
+Final chunks (left to right):
+  3 | 112 | 426 | 392
+
+PHASE 4) Recombine (pad chunks to 3 digits except the first)
+  3112426392
+
+Answer:
+  60204 * 51698 = 
+\box{3112426392}
+
+
+============================================================
+AI RESPONSE
+============================================================
+
+PHASE 1 (chunking) is wrong.
+
+- With chunk size 3 (BASE = 1000), you must split **60204** as **[60, 204]** (left to right) or **204 (i=0), 60 (i=1)** from the right.
+- You must split **51698** as **[51, 698]** or **698 (i=0), 51 (i=1)**.
+
+The transcript instead uses:
+- A chunks: **167, 93**
+- B chunks: **786, 53**
+
+These do not correspond to the original numbers in base 1000, so everything after that is based on incorrect inputs.
+
+PHASE 3 and PHASE 4 also contain internal inconsistencies:
+
+- After carrying, the transcript obtains digits/top: top = 5, bucket2 = 11, bucket1 = 80, bucket0 = 262, which would recombine (with 3-digit padding) to **5 | 011 | 080 | 262 = 5011080262**, not **3112426392**.
+- The stated “Final chunks (left to right): 3 | 112 | 426 | 392” does not match the carried bucket results they computed.
+
+Finally, the true product is:
+- \(60204 \times 51698 = 3,112,423,992\)
+
+Their boxed answer **3112426392** differs from the correct value (it should be **3112423992**), off by 2400.
+
+\box{incorrect}

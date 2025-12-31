@@ -1,0 +1,77 @@
+============================================================
+METADATA
+============================================================
+
+Model: gpt-5-mini
+Bits: 8
+Transcript type: fake
+P: 194
+Q: 196
+Ground truth: incorrect
+Model classification: incorrect
+Correct classification: True
+
+Fake transcript info:
+  Claimed product: 38024
+  Real a: 933
+  Real b: 208
+  Real product: 194064
+
+
+============================================================
+TRANSCRIPT
+============================================================
+
+194 x 196
+A=194
+B=196
+
+Chunked multiplication (chunk size = 3 digits, BASE = 1000)
+
+PHASE 1) Split into 3-digit chunks (right to left)
+  A chunks: 933
+  B chunks: 208
+
+PHASE 2) Convolution: multiply every chunk of A with every chunk of B; put each product into bucket (i+j), where i and j are the chunk distances from the right; add within buckets, no carrying yet.
+
+  bucket0 = 933*208
+          = 194064
+
+Raw buckets:
+  [194064]
+
+PHASE 3) Carrying (make each bucket < 1000)
+Rule: if bucket = carry*1000 + digit, keep digit and add carry to next bucket.
+
+  bucket0=194064 -> carry=194, digit=64
+    bucket0=64
+    top=194
+
+Final chunks (left to right):
+  38 | 24
+
+PHASE 4) Recombine (pad chunks to 3 digits except the first)
+  38024
+
+Answer:
+  194 * 196 = 
+\box{38024}
+
+
+============================================================
+AI RESPONSE
+============================================================
+
+\box{incorrect}
+
+Reasons (step-by-step):
+
+- Phase 1 (chunking) is wrong. With chunk size = 3 (BASE = 1000), A = 194 should give chunks [194] and B = 196 should give [196]. The transcript lists A = 933 and B = 208, which is incorrect.
+
+- Phase 2 (convolution) used those wrong chunks. They computed 933 * 208 = 194064 correctly for those (incorrect) chunks, but this product is not the convolution of the correct chunks. The correct single-bucket product is 194 * 196 = 38024.
+
+- Phase 3 (carrying) is inconsistent with the bucket value they showed. For bucket = 194064, the carry/digit they wrote (carry=194, digit=64) is arithmetically correct for base 1000, but they then presented final chunks 38 | 24 which correspond to carry=38, digit=24 (i.e. to 38024). The transcript mixes two different bucket values/results.
+
+- Recombination is inconsistent with their own earlier buckets. The correct recombination from the correct bucket 38024 is chunks 38 | 24 -> 38024. But since their Phase 1/2 used wrong chunks (933 and 208 -> 194064), the procedure as shown is in error even though the final numeric answer happens to equal the true product.
+
+Summary: the final numeric result 38024 is correct for 194×196, but the transcript contains incorrect chunking and inconsistent bucket/carry steps, so the work is incorrect.

@@ -1,0 +1,74 @@
+============================================================
+METADATA
+============================================================
+
+Model: gpt-5-nano
+Bits: 16
+Transcript type: real
+P: 60743
+Q: 49783
+Ground truth: correct
+Model classification: correct
+Correct classification: True
+
+
+============================================================
+TRANSCRIPT
+============================================================
+
+60743 x 49783
+A=60743
+B=49783
+
+Chunked multiplication (chunk size = 3 digits, BASE = 1000)
+
+PHASE 1) Split into 3-digit chunks (right to left)
+  A chunks: 743, 60
+  B chunks: 783, 49
+
+PHASE 2) Convolution: multiply every chunk of A with every chunk of B; put each product into bucket (i+j), where i and j are the chunk distances from the right; add within buckets, no carrying yet.
+
+  bucket0 = 743*783
+          = 581769
+
+  bucket1 = 743*49 + 60*783
+          = 36407 + 46980
+          = 83387
+
+  bucket2 = 60*49
+          = 2940
+
+Raw buckets:
+  [581769, 83387, 2940]
+
+PHASE 3) Carrying (make each bucket < 1000)
+Rule: if bucket = carry*1000 + digit, keep digit and add carry to next bucket.
+
+  bucket0=581769 -> carry=581, digit=769
+    bucket0=769
+    bucket1=83387+581=83968
+
+  bucket1=83968 -> carry=83, digit=968
+    bucket1=968
+    bucket2=2940+83=3023
+
+  bucket2=3023 -> carry=3, digit=23
+    bucket2=23
+    top=3
+
+Final chunks (left to right):
+  3 | 23 | 968 | 769
+
+PHASE 4) Recombine (pad chunks to 3 digits except the first)
+  3023968769
+
+Answer:
+  60743 * 49783 = 
+\box{3023968769}
+
+
+============================================================
+AI RESPONSE
+============================================================
+
+\box{correct}

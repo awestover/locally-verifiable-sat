@@ -4,12 +4,11 @@ Experiment to test if an AI can classify multiplication transcripts as correct o
 Uses real transcripts from generate_multiplication.py and fake transcripts from gen_bs_multiplication.py
 """
 
-import os
+import asyncio
 import random
 import re
 from pathlib import Path
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from openai import OpenAI
+from openai import AsyncOpenAI
 import matplotlib.pyplot as plt
 
 from generate_multiplication import generate_multiplication_text
@@ -83,14 +82,23 @@ def generate_random_number(bits):
 
 
 MODELS = [
+    "gpt-3.5-turbo",
+    "gpt-4o-mini",
+    "gpt-4o",
+    "gpt-4.1-nano",
+    "gpt-4.1-mini",
+    "gpt-4.1",
+    "gpt-5-nano",
+    "gpt-5-mini",
     "gpt-5.2",
 ]
 
+# Models that support reasoning_effort parameter
+REASONING_MODELS = {"gpt-5.2", "gpt-5-mini", "gpt-5-nano", "gpt-5", "gpt-5.1"}
 
-def query_classifier(transcript, model="gpt-5.2"):
+
+async def query_classifier(client, transcript, model="gpt-5.2"):
     """Ask the AI to classify a multiplication transcript as correct or incorrect."""
-    client = OpenAI()
-
     prompt = f"""You are a verification system. Below is a multiplication transcript showing step-by-step work.
 
 Your task: Determine if the multiplication is performed CORRECTLY or if there are ERRORS.
@@ -109,56 +117,63 @@ Analyze the transcript step by step. Then give your final verdict.
 
 Put your final answer in \\box{{correct}} if the multiplication is correct, or \\box{{incorrect}} if there are errors."""
 
-    response = client.chat.completions.create(
-        model=model,
-        messages=[{"role": "user", "content": prompt}],
-        reasoning_effort="none",
-        tools=[],
-    )
+    kwargs = {
+        "model": model,
+        "messages": [{"role": "user", "content": prompt}],
+    }
+
+    if model in REASONING_MODELS:
+        if model in {"gpt-5-mini", "gpt-5-nano"}:
+            kwargs["reasoning_effort"] = "medium"
+        else:
+            kwargs["reasoning_effort"] = "none"
+
+    response = await client.chat.completions.create(**kwargs)
 
     return prompt, response.choices[0].message.content
 
 
-def process_single_task(task):
+async def process_single_task(client, semaphore, task):
     """Process a single classification task."""
     model, bits, idx, is_real, transcript, p, q, info = task
 
-    try:
-        prompt, response = query_classifier(transcript, model=model)
+    async with semaphore:
+        try:
+            prompt, response = await query_classifier(client, transcript, model=model)
 
-        # Extract classification
-        model_classification = extract_boxed_classification(response)
-        
-        # Ground truth: real transcripts are correct, fake transcripts are incorrect
-        ground_truth = 'correct' if is_real else 'incorrect'
-        is_correct_classification = (model_classification == ground_truth)
+            # Extract classification
+            model_classification = extract_boxed_classification(response)
 
-        result = {
-            'success': True,
-            'model': model,
-            'bits': bits,
-            'is_real_transcript': is_real,
-            'ground_truth': ground_truth,
-            'model_classification': model_classification,
-            'is_correct_classification': is_correct_classification,
-            'p': p,
-            'q': q,
-            'info': info,
-            'prompt': prompt,
-            'response': response,
-            'transcript': transcript
-        }
-        return model, bits, idx, is_real, is_correct_classification, result
+            # Ground truth: real transcripts are correct, fake transcripts are incorrect
+            ground_truth = 'correct' if is_real else 'incorrect'
+            is_correct_classification = (model_classification == ground_truth)
 
-    except Exception as e:
-        result = {
-            'success': False,
-            'model': model,
-            'bits': bits,
-            'is_real_transcript': is_real,
-            'error': str(e)
-        }
-        return model, bits, idx, is_real, False, result
+            result = {
+                'success': True,
+                'model': model,
+                'bits': bits,
+                'is_real_transcript': is_real,
+                'ground_truth': ground_truth,
+                'model_classification': model_classification,
+                'is_correct_classification': is_correct_classification,
+                'p': p,
+                'q': q,
+                'info': info,
+                'prompt': prompt,
+                'response': response,
+                'transcript': transcript
+            }
+            return model, bits, idx, is_real, is_correct_classification, result
+
+        except Exception as e:
+            result = {
+                'success': False,
+                'model': model,
+                'bits': bits,
+                'is_real_transcript': is_real,
+                'error': str(e)
+            }
+            return model, bits, idx, is_real, False, result
 
 
 def save_result(model, bits, idx, is_real, result):
@@ -312,7 +327,7 @@ def plot_results(results_by_model_bits, bit_lengths, models):
     return plot_path
 
 
-def run_experiment(R=5, test_mode=False, max_workers=50, models=None):
+async def run_experiment(R=5, test_mode=False, max_concurrency=150, models=None):
     """Run the classification experiment."""
     GENERATIONS_DIR.mkdir(exist_ok=True)
 
@@ -340,43 +355,48 @@ def run_experiment(R=5, test_mode=False, max_workers=50, models=None):
                 # Generate a multiplication problem
                 p = generate_random_number(bits)
                 q = generate_random_number(bits)
-                
+
                 # Real transcript (correct)
                 real_transcript = generate_multiplication_text(p, q)
                 tasks.append((model, bits, i, True, real_transcript, p, q, None))
-                
+
                 # Fake transcript (incorrect)
                 fake_transcript, info = generate_fake_multiplication_with_info(p, q)
                 tasks.append((model, bits, i, False, fake_transcript, p, q, info))
 
     print(f"\nGenerated {len(tasks)} tasks ({len(models)} models × {len(bit_lengths)} bit lengths × {R} trials × 2 transcript types)")
-    print(f"Running with {max_workers} parallel workers...\n")
+    print(f"Running with max concurrency of {max_concurrency}...\n")
 
     # Track results
     results_by_model_bits = {}
+    completed = 0
+    total_tasks = len(tasks)
 
-    # Process all tasks in parallel
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        future_to_task = {executor.submit(process_single_task, task): task for task in tasks}
+    # Create client and semaphore
+    client = AsyncOpenAI()
+    semaphore = asyncio.Semaphore(max_concurrency)
 
-        completed = 0
-        for future in as_completed(future_to_task):
-            model, bits, idx, is_real, is_correct_classification, result = future.result()
+    async def process_and_record(task):
+        nonlocal completed
+        model, bits, idx, is_real, is_correct_classification, result = await process_single_task(client, semaphore, task)
 
-            key = (model, bits)
-            if key not in results_by_model_bits:
-                results_by_model_bits[key] = {'real': [], 'fake': []}
-            
-            category = 'real' if is_real else 'fake'
-            results_by_model_bits[key][category].append(is_correct_classification)
+        key = (model, bits)
+        if key not in results_by_model_bits:
+            results_by_model_bits[key] = {'real': [], 'fake': []}
 
-            # Save result
-            save_result(model, bits, idx, is_real, result)
+        category = 'real' if is_real else 'fake'
+        results_by_model_bits[key][category].append(is_correct_classification)
 
-            completed += 1
-            status = "✓" if is_correct_classification else "✗"
-            transcript_type = "real" if is_real else "fake"
-            print(f"[{completed}/{len(tasks)}] {model} bits={bits} {transcript_type}: {status}")
+        # Save result
+        save_result(model, bits, idx, is_real, result)
+
+        completed += 1
+        status = "✓" if is_correct_classification else "✗"
+        transcript_type = "real" if is_real else "fake"
+        print(f"[{completed}/{total_tasks}] {model} bits={bits} {transcript_type}: {status}")
+
+    # Process all tasks concurrently
+    await asyncio.gather(*[process_and_record(task) for task in tasks])
 
     # Print summary
     print("\n" + "=" * 60)
@@ -410,5 +430,5 @@ def run_experiment(R=5, test_mode=False, max_workers=50, models=None):
 if __name__ == "__main__":
     import sys
     test_mode = "--test" in sys.argv
-    run_experiment(R=5, test_mode=test_mode)
+    asyncio.run(run_experiment(R=5, test_mode=test_mode))
 

@@ -1,0 +1,116 @@
+============================================================
+METADATA
+============================================================
+
+Model: gpt-5-nano
+Bits: 32
+Transcript type: fake
+P: 2492494631
+Q: 3133879580
+Ground truth: incorrect
+Model classification: incorrect
+Correct classification: True
+
+Fake transcript info:
+  Claimed product: 7811178027350534980
+  Real a: 3735765680
+  Real b: 1696973261
+  Real product: 6339494468321482480
+
+
+============================================================
+TRANSCRIPT
+============================================================
+
+2492494631 x 3133879580
+A=2492494631
+B=3133879580
+
+Chunked multiplication (chunk size = 3 digits, BASE = 1000)
+
+PHASE 1) Split into 3-digit chunks (right to left)
+  A chunks: 680, 765, 735, 3
+  B chunks: 261, 973, 696, 1
+
+PHASE 2) Convolution: multiply every chunk of A with every chunk of B; put each product into bucket (i+j), where i and j are the chunk distances from the right; add within buckets, no carrying yet.
+
+  bucket0 = 680*261
+          = 177480
+
+  bucket1 = 680*973 + 765*261
+          = 661640 + 199665
+          = 861305
+
+  bucket2 = 680*696 + 765*973 + 735*261
+          = 473280 + 744345 + 191835
+          = 1217625 + 191835
+          = 1409460
+
+  bucket3 = 680*1 + 765*696 + 735*973 + 3*261
+          = 680 + 532440 + 715155 + 783
+          = 533120 + 715155 + 783
+          = 1248275 + 783
+          = 1249058
+
+  bucket4 = 765*1 + 735*696 + 3*973
+          = 765 + 511560 + 2919
+          = 512325 + 2919
+          = 515244
+
+  bucket5 = 735*1 + 3*696
+          = 735 + 2088
+          = 2823
+
+  bucket6 = 3*1
+          = 3
+
+Raw buckets:
+  [177480, 861305, 1409460, 1249058, 515244, 2823, 3]
+
+PHASE 3) Carrying (make each bucket < 1000)
+Rule: if bucket = carry*1000 + digit, keep digit and add carry to next bucket.
+
+  bucket0=177480 -> carry=177, digit=480
+    bucket0=480
+    bucket1=861305+177=861482
+
+  bucket1=861482 -> carry=861, digit=482
+    bucket1=482
+    bucket2=1409460+861=1410321
+
+  bucket2=1410321 -> carry=1410, digit=321
+    bucket2=321
+    bucket3=1249058+1410=1250468
+
+  bucket3=1250468 -> carry=1250, digit=468
+    bucket3=468
+    bucket4=515244+1250=516494
+
+  bucket4=516494 -> carry=516, digit=494
+    bucket4=494
+    bucket5=2823+516=3339
+
+  bucket5=3339 -> carry=3, digit=339
+    bucket5=339
+    bucket6=3+3=6
+
+  bucket6=6 -> carry=0, digit=6
+    bucket6=6
+    top=0
+
+Final chunks (left to right):
+  7 | 811 | 178 | 27 | 350 | 534 | 980
+
+PHASE 4) Recombine (pad chunks to 3 digits except the first)
+  7811178027350534980
+
+Answer:
+  2492494631 * 3133879580 = 
+\box{7811178027350534980}
+
+
+============================================================
+AI RESPONSE
+============================================================
+
+\box{incorrect}

@@ -1,0 +1,146 @@
+============================================================
+METADATA
+============================================================
+
+Model: gpt-5-mini
+Bits: 32
+Transcript type: fake
+P: 3483766736
+Q: 3752774228
+Ground truth: incorrect
+Model classification: incorrect
+Correct classification: True
+
+Fake transcript info:
+  Claimed product: 13073790023224479808
+  Real a: 5671251342
+  Real b: 6685768904
+  Real product: 37916675869111869168
+
+
+============================================================
+TRANSCRIPT
+============================================================
+
+3483766736 x 3752774228
+A=3483766736
+B=3752774228
+
+Chunked multiplication (chunk size = 3 digits, BASE = 1000)
+
+PHASE 1) Split into 3-digit chunks (right to left)
+  A chunks: 342, 251, 671, 5
+  B chunks: 904, 768, 685, 6
+
+PHASE 2) Convolution: multiply every chunk of A with every chunk of B; put each product into bucket (i+j), where i and j are the chunk distances from the right; add within buckets, no carrying yet.
+
+  bucket0 = 342*904
+          = 309168
+
+  bucket1 = 342*768 + 251*904
+          = 262656 + 226904
+          = 489560
+
+  bucket2 = 342*685 + 251*768 + 671*904
+          = 234270 + 192768 + 606584
+          = 427038 + 606584
+          = 1033622
+
+  bucket3 = 342*6 + 251*685 + 671*768 + 5*904
+          = 2052 + 171935 + 515328 + 4520
+          = 173987 + 515328 + 4520
+          = 689315 + 4520
+          = 693835
+
+  bucket4 = 251*6 + 671*685 + 5*768
+          = 1506 + 459635 + 3840
+          = 461141 + 3840
+          = 464981
+
+  bucket5 = 671*6 + 5*685
+          = 4026 + 3425
+          = 7451
+
+  bucket6 = 5*6
+          = 30
+
+Raw buckets:
+  [309168, 489560, 1033622, 693835, 464981, 7451, 30]
+
+PHASE 3) Carrying (make each bucket < 1000)
+Rule: if bucket = carry*1000 + digit, keep digit and add carry to next bucket.
+
+  bucket0=309168 -> carry=309, digit=168
+    bucket0=168
+    bucket1=489560+309=489869
+
+  bucket1=489869 -> carry=489, digit=869
+    bucket1=869
+    bucket2=1033622+489=1034111
+
+  bucket2=1034111 -> carry=1034, digit=111
+    bucket2=111
+    bucket3=693835+1034=694869
+
+  bucket3=694869 -> carry=694, digit=869
+    bucket3=869
+    bucket4=464981+694=465675
+
+  bucket4=465675 -> carry=465, digit=675
+    bucket4=675
+    bucket5=7451+465=7916
+
+  bucket5=7916 -> carry=7, digit=916
+    bucket5=916
+    bucket6=30+7=37
+
+  bucket6=37 -> carry=0, digit=37
+    bucket6=37
+    top=0
+
+Final chunks (left to right):
+  13 | 73 | 790 | 23 | 224 | 479 | 808
+
+PHASE 4) Recombine (pad chunks to 3 digits except the first)
+  13073790023224479808
+
+Answer:
+  3483766736 * 3752774228 = 
+\box{13073790023224479808}
+
+
+============================================================
+AI RESPONSE
+============================================================
+
+Final verdict: \box{incorrect}
+
+Summary of errors (step-by-step):
+
+1) Phase 1 — Chunking is wrong.
+- A = 3,483,766,736 should split (right-to-left, 3-digit chunks) as: [736, 766, 483, 3] (or left-to-right as 3 | 483 | 766 | 736).
+  Transcript lists A chunks = [342, 251, 671, 5] — incorrect.
+- B = 3,752,774,228 should split as: [228, 774, 752, 3].
+  Transcript lists B chunks = [904, 768, 685, 6] — incorrect.
+
+2) Phase 2 — Bucket (convolution) products are therefore incorrect.
+- Using the correct chunks (a0=736,a1=766,a2=483,a3=3 and b0=228,b1=774,b2=752,b3=3) the raw bucket sums are:
+  bucket0 = 736*228 = 167,808
+  bucket1 = 736*774 + 766*228 = 569,664 + 174,648 = 744,312
+  bucket2 = 736*752 + 766*774 + 483*228 = 553,472 + 592,884 + 110,124 = 1,256,480
+  bucket3 = 736*3 + 766*752 + 483*774 + 3*228 = 2,208 + 576,032 + 373,842 + 684 = 952,766
+  bucket4 = 766*3 + 483*752 + 3*774 = 2,298 + 363,216 + 2,322 = 367,836
+  bucket5 = 483*3 + 3*752 = 1,449 + 2,256 = 3,705
+  bucket6 = 3*3 = 9
+  Raw buckets: [167,808; 744,312; 1,256,480; 952,766; 367,836; 3,705; 9]
+- These differ from the transcript's raw buckets ([309,168; 489,560; 1,033,622; 693,835; 464,981; 7,451; 30]).
+
+3) Phase 3 — Carrying:
+- Carrying the correct raw buckets (base 1000) gives final 3-digit chunks (high to low):
+  bucket6 = 13, bucket5 = 073, bucket4 = 790, bucket3 = 023, bucket2 = 224, bucket1 = 479, bucket0 = 808
+- Recombined (pad to 3 digits except first): 13|073|790|023|224|479|808 -> 13,073,790,023,224,479,808
+- The transcript's carrying steps used their incorrect raw buckets, but after their (incorrect) intermediate arithmetic they ended up with the same final numeric chunks and final numeric answer. However the intermediate chunking and bucket multiplications are wrong.
+
+Conclusion:
+- The procedure as written contains clear errors (Phase 1 chunking and Phase 2 bucket multiplications are incorrect).
+- Even though the final numeric product they wrote, 13073790023224479808, matches the correct product for the original numbers, the steps are not performed correctly. Because the work contains incorrect intermediate steps, the transcript is incorrect.

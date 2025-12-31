@@ -1,0 +1,122 @@
+============================================================
+METADATA
+============================================================
+
+Model: gpt-5.2
+Bits: 16
+Transcript type: fake
+P: 52966
+Q: 56819
+Ground truth: incorrect
+Model classification: incorrect
+Correct classification: True
+
+Fake transcript info:
+  Claimed product: 3009475154
+  Real a: 61136
+  Real b: 68814
+  Real product: 4207012704
+
+
+============================================================
+TRANSCRIPT
+============================================================
+
+52966 x 56819
+A=52966
+B=56819
+
+Chunked multiplication (chunk size = 3 digits, BASE = 1000)
+
+PHASE 1) Split into 3-digit chunks (right to left)
+  A chunks: 136, 61
+  B chunks: 814, 68
+
+PHASE 2) Convolution: multiply every chunk of A with every chunk of B; put each product into bucket (i+j), where i and j are the chunk distances from the right; add within buckets, no carrying yet.
+
+  bucket0 = 136*814
+          = 110704
+
+  bucket1 = 136*68 + 61*814
+          = 9248 + 49654
+          = 58902
+
+  bucket2 = 61*68
+          = 4148
+
+Raw buckets:
+  [110704, 58902, 4148]
+
+PHASE 3) Carrying (make each bucket < 1000)
+Rule: if bucket = carry*1000 + digit, keep digit and add carry to next bucket.
+
+  bucket0=110704 -> carry=110, digit=704
+    bucket0=704
+    bucket1=58902+110=59012
+
+  bucket1=59012 -> carry=59, digit=12
+    bucket1=12
+    bucket2=4148+59=4207
+
+  bucket2=4207 -> carry=4, digit=207
+    bucket2=207
+    top=4
+
+Final chunks (left to right):
+  3 | 9 | 475 | 154
+
+PHASE 4) Recombine (pad chunks to 3 digits except the first)
+  3009475154
+
+Answer:
+  52966 * 56819 = 
+\box{3009475154}
+
+
+============================================================
+AI RESPONSE
+============================================================
+
+PHASE 1 (chunking): **Incorrect**.
+
+- With chunk size 3 (base 1000),  
+  \(52966\) should split as **[966, 52]** (since \(52\cdot 1000 + 966 = 52966\)), not **[136, 61]**.  
+  \(56819\) should split as **[819, 56]**, not **[814, 68]**.
+
+So the transcript is not even working with the stated numbers.
+
+PHASE 2 (convolution): **Also inconsistent with the given inputs**.
+
+Even if we ignore the bad chunk split and just use their chunks:
+- \(136 \cdot 814 = 110{,}704\) (ok)
+- \(136\cdot 68 = 9{,}248\) (ok)
+- \(61\cdot 814 = 49{,}654\) (ok)
+- \(61\cdot 68 = 4{,}148\) (ok)
+
+So their bucket arithmetic matches **their** chunks, but those chunks do not match \(52966\) and \(56819\).
+
+PHASE 3 (carrying): **Incorrect**.
+
+Starting from raw buckets \([110704, 58902, 4148]\):
+- After carrying bucket0: carry 110, digit 704 → bucket1 becomes \(58902+110=59012\) (ok)
+- Carry bucket1: \(59012\) → carry 59, digit **12** → bucket2 becomes \(4148+59=4207\) (ok)
+- Carry bucket2: \(4207\) → carry 4, digit **207** (ok)
+
+So final carried chunks (most significant to least) should be:
+**[4, 207, 12, 704]**, which recombines to **4,207,012,704**.
+
+But the transcript states final chunks **“3 | 9 | 475 | 154”** and recombines to **3,009,475,154**, which does not follow from the buckets/carrying shown.
+
+PHASE 4 (final answer vs true product): **Incorrect**.
+
+Compute the real product:
+\[
+52966 \times 56819 = 3,009,382,654
+\]
+The transcript’s answer is **3,009,475,154**, not equal.
+
+Therefore the work contains multiple errors (wrong chunking, wrong final recombination, and final answer wrong).
+
+\[
+\boxed{incorrect}
+\]
