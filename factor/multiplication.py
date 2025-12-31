@@ -15,30 +15,49 @@ def generate_semiprime(log_n):
     # Target size for each prime is roughly sqrt(2^log_n) = 2^(log_n/2)
     target_bits = max(2, log_n // 2)
 
-    def is_prime(n):
+    def is_probable_prime(n, rounds=8):
+        """Miller-Rabin primality test for large integers."""
         if n < 2:
             return False
-        if n == 2:
+        small_primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37]
+        if n in small_primes:
             return True
-        if n % 2 == 0:
-            return False
-        for i in range(3, int(math.sqrt(n)) + 1, 2):
-            if n % i == 0:
+        for p in small_primes:
+            if n % p == 0:
+                return False
+
+        # Write n-1 as d * 2^s
+        d = n - 1
+        s = 0
+        while d % 2 == 0:
+            d //= 2
+            s += 1
+
+        for _ in range(rounds):
+            a = random.randrange(2, n - 1)
+            x = pow(a, d, n)
+            if x in (1, n - 1):
+                continue
+            for _ in range(s - 1):
+                x = pow(x, 2, n)
+                if x == n - 1:
+                    break
+            else:
                 return False
         return True
 
     def random_prime(bits):
-        """Generate a random prime with approximately 'bits' bits."""
+        """Generate a random probable prime with approximately 'bits' bits."""
         min_val = max(2, 2 ** (bits - 1))
         max_val = 2 ** bits - 1
         if min_val > max_val:
             min_val = 2
 
-        # Try to find a prime in range
         attempts = 0
-        while attempts < 1000:
+        while attempts < 2000:
             candidate = random.randint(min_val, max_val)
-            if is_prime(candidate):
+            candidate |= 1  # force odd
+            if is_probable_prime(candidate):
                 return candidate
             attempts += 1
 

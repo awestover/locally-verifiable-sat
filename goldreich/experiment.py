@@ -328,6 +328,10 @@ async def run_trial(n_vars, model, reasoning_effort, semaphore):
     return {
         "honest_correct": 1 if honest_result == True else 0,
         "dishonest_correct": 1 if dishonest_result == False else 0,
+        "honest_trace": honest_trace,
+        "dishonest_trace": dishonest_trace,
+        "honest_response": honest_response,
+        "dishonest_response": dishonest_response,
     }
 
 

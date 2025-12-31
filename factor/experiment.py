@@ -30,6 +30,7 @@ Please output "good" if I've correctly multiplied the numbers and "bad" otherwis
 
 # Model configurations
 MODEL_CONFIGS = {
+    "gpt-5.2": {"reasoning_effort": "medium"},
     "gpt-5.1": {"reasoning_effort": "medium"},
     "gpt-5-mini": {"reasoning_effort": "low"},
     "gpt-5-nano": {"reasoning_effort": "low"},
@@ -75,6 +76,52 @@ def parse_yes_no(response_text):
         return False
 
     return None
+
+
+def parse_comma_separated_ints(value):
+    return [int(v.strip()) for v in value.split(",") if v.strip()]
+
+
+def build_model_configs(models_arg):
+    models = [m.strip() for m in models_arg.split(",") if m.strip()]
+    configs = {}
+    for model in models:
+        if model in MODEL_CONFIGS:
+            configs[model] = MODEL_CONFIGS[model]
+        else:
+            configs[model] = {"reasoning_effort": "medium"}
+    return configs
+
+
+def generate_examples(log_n_values, examples_per_log_n):
+    examples = []
+    modes = ["binary", "decimal", "stepwise"]
+    for log_n in log_n_values:
+        for mode in modes:
+            for _ in range(examples_per_log_n):
+                p, q, n = generate_semiprime(log_n)
+                if mode == "binary":
+                    honest_trace = generate_honest_trace_binary(p, q)
+                    dishonest_trace = generate_dishonest_trace_binary(n)
+                elif mode == "decimal":
+                    honest_trace = generate_honest_trace_decimal(p, q)
+                    dishonest_trace = generate_dishonest_trace_decimal(n)
+                else:
+                    honest_trace = generate_honest_trace_stepwise(p, q)
+                    dishonest_trace = generate_dishonest_trace_stepwise(n)
+
+                examples.append(
+                    {
+                        "log_n": log_n,
+                        "mode": mode,
+                        "p": p,
+                        "q": q,
+                        "n": n,
+                        "honest_trace": honest_trace,
+                        "dishonest_trace": dishonest_trace,
+                    }
+                )
+    return examples
 
 
 async def evaluate_trace(trace, model, reasoning_effort, semaphore, use_system_prompt=True):
@@ -150,7 +197,7 @@ async def run_trial(log_n, model, reasoning_effort, mode, semaphore):
     }
 
 
-async def run_experiment(log_n_values, model_configs, n_trials, mode, semaphore):
+async def run_experiment(log_n_values, model_configs, n_trials, mode, semaphore, progress_every=0):
     """
     Run the full experiment.
 
@@ -179,7 +226,17 @@ async def run_experiment(log_n_values, model_configs, n_trials, mode, semaphore)
                 run_trial(log_n, model, reasoning_effort, mode, semaphore)
                 for _ in range(n_trials)
             ]
-            trial_results = await asyncio.gather(*tasks)
+            if progress_every and n_trials > 1:
+                trial_results = []
+                completed = 0
+                for coro in asyncio.as_completed(tasks):
+                    result = await coro
+                    trial_results.append(result)
+                    completed += 1
+                    if completed % progress_every == 0 or completed == n_trials:
+                        print(f"  progress logN={log_n}, mode={mode}: {completed}/{n_trials}")
+            else:
+                trial_results = await asyncio.gather(*tasks)
 
             # Aggregate results
             honest_correct = sum(r["honest_correct"] for r in trial_results)
@@ -303,6 +360,53 @@ async def main():
         action="store_true",
         help="Run in test mode (logN=2,4,8 and gpt-5-mini only)",
     )
+    parser.add_argument(
+        "--log-n-values",
+        type=str,
+        default=None,
+        help="Comma-separated log2 values, e.g. 8,16,32",
+    )
+    parser.add_argument(
+        "--models",
+        type=str,
+        default=None,
+        help="Comma-separated model names",
+    )
+    parser.add_argument(
+        "--n-trials",
+        type=int,
+        default=None,
+        help="Override number of trials per config",
+    )
+    parser.add_argument(
+        "--save-examples",
+        type=str,
+        default=None,
+        help="Path to write example traces JSON",
+    )
+    parser.add_argument(
+        "--examples-per-log-n",
+        type=int,
+        default=0,
+        help="Number of examples per logN per mode to save",
+    )
+    parser.add_argument(
+        "--concurrency",
+        type=int,
+        default=50,
+        help="Maximum concurrent API requests",
+    )
+    parser.add_argument(
+        "--parallel-modes",
+        action="store_true",
+        help="Run binary/decimal/stepwise experiments concurrently",
+    )
+    parser.add_argument(
+        "--progress-every",
+        type=int,
+        default=0,
+        help="Print progress every N completed trials per logN (0 to disable)",
+    )
     args = parser.parse_args()
 
     # Configuration based on mode
@@ -316,25 +420,46 @@ async def main():
         model_configs = MODEL_CONFIGS
         n_trials = 8
 
+    if args.log_n_values:
+        log_n_values = parse_comma_separated_ints(args.log_n_values)
+    if args.models:
+        model_configs = build_model_configs(args.models)
+    if args.n_trials is not None:
+        n_trials = args.n_trials
+
     print(f"logN values: {log_n_values}")
     print(f"Models: {list(model_configs.keys())}")
     print(f"Trials per config: {n_trials}")
     print()
 
     # Rate limiting semaphore
-    semaphore = asyncio.Semaphore(50)
+    semaphore = asyncio.Semaphore(args.concurrency)
 
     # Run experiments
-    print("=== Running Binary Mode ===")
-    results_binary = await run_experiment(log_n_values, model_configs, n_trials, "binary", semaphore)
+    if args.parallel_modes:
+        print("=== Running Binary/Decimal/Stepwise Modes in Parallel ===")
+        results_binary, results_decimal, results_stepwise = await asyncio.gather(
+            run_experiment(log_n_values, model_configs, n_trials, "binary", semaphore, args.progress_every),
+            run_experiment(log_n_values, model_configs, n_trials, "decimal", semaphore, args.progress_every),
+            run_experiment(log_n_values, model_configs, n_trials, "stepwise", semaphore, args.progress_every),
+        )
+    else:
+        print("=== Running Binary Mode ===")
+        results_binary = await run_experiment(
+            log_n_values, model_configs, n_trials, "binary", semaphore, args.progress_every
+        )
 
-    print()
-    print("=== Running Decimal Mode ===")
-    results_decimal = await run_experiment(log_n_values, model_configs, n_trials, "decimal", semaphore)
+        print()
+        print("=== Running Decimal Mode ===")
+        results_decimal = await run_experiment(
+            log_n_values, model_configs, n_trials, "decimal", semaphore, args.progress_every
+        )
 
-    print()
-    print("=== Running Stepwise Mode ===")
-    results_stepwise = await run_experiment(log_n_values, model_configs, n_trials, "stepwise", semaphore)
+        print()
+        print("=== Running Stepwise Mode ===")
+        results_stepwise = await run_experiment(
+            log_n_values, model_configs, n_trials, "stepwise", semaphore, args.progress_every
+        )
 
     # Save results
     script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -361,6 +486,25 @@ async def main():
             indent=2,
         )
     print(f"\nResults saved to {results_path}")
+
+    if args.examples_per_log_n > 0:
+        examples = generate_examples(log_n_values, args.examples_per_log_n)
+        examples_path = args.save_examples
+        if not examples_path:
+            examples_path = os.path.join(data_dir, "examples.json")
+        with open(examples_path, "w") as f:
+            json.dump(
+                {
+                    "examples": examples,
+                    "config": {
+                        "log_n_values": log_n_values,
+                        "examples_per_log_n": args.examples_per_log_n,
+                    },
+                },
+                f,
+                indent=2,
+            )
+        print(f"Examples saved to {examples_path}")
 
     # Create plots
     create_plots(results_binary, results_decimal, results_stepwise, log_n_values, plots_dir)

@@ -1,3 +1,5 @@
 artifacts/
 env/
 artifacts*/
+*.pyc
+__pycache__/
