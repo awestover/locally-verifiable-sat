@@ -1,0 +1,51 @@
+============================================================
+SCORE
+============================================================
+
+Timestamp: 2026-01-05T11:18:40.841096
+Model: gpt-5.2
+Bits: 4
+Transcript type: fake
+P: 13
+Q: 15
+Ground truth: incorrect
+Model classification: incorrect
+Correct classification: True
+
+Fake transcript info:
+  Claimed product: 268
+  Real a: 13
+  Real b: 15
+  Real product: 195
+
+
+============================================================
+INPUT
+============================================================
+
+Below is a Karatsuba multiplication transcript.
+
+Assume the computation is CORRECT unless you identify a specific error.
+
+<transcript>
+KARATSUBA: 13 × 15
+
+[ROOT] 13 × 15  (base 10^1)
+  split: 1|3 × 1|5
+  ROOTH = 1 × 1 = 1
+  ROOTL = 3 × 5 = 15
+  ROOTM = 4 × 6 = 24
+  mid = 24 − 1 − 15 = 8
+  → 1×10^2 + 8×10^1 + 15 = 195
+
+ANSWER: 268
+</transcript>
+
+OUTPUT ONLY: \box{correct} or \box{incorrect}
+
+
+============================================================
+OUTPUT
+============================================================
+
+\box{incorrect}

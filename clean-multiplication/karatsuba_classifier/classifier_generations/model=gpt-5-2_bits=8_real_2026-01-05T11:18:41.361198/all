@@ -1,0 +1,45 @@
+============================================================
+SCORE
+============================================================
+
+Timestamp: 2026-01-05T11:18:41.361308
+Model: gpt-5.2
+Bits: 8
+Transcript type: real
+P: 135
+Q: 229
+Ground truth: correct
+Model classification: correct
+Correct classification: True
+
+
+============================================================
+INPUT
+============================================================
+
+Below is a Karatsuba multiplication transcript.
+
+Assume the computation is CORRECT unless you identify a specific error.
+
+<transcript>
+KARATSUBA: 135 × 229
+
+[ROOT] 135 × 229  (base 10^1)
+  split: 13|5 × 22|9
+  ROOTH = 13 × 22 = 286
+  ROOTL = 5 × 9 = 45
+  ROOTM = 18 × 31 = 558
+  mid = 558 − 286 − 45 = 227
+  → 286×10^2 + 227×10^1 + 45 = 30,915
+
+ANSWER: 30,915
+</transcript>
+
+OUTPUT ONLY: \box{correct} or \box{incorrect}
+
+
+============================================================
+OUTPUT
+============================================================
+
+\box{correct}

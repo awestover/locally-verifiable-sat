@@ -102,7 +102,7 @@ async def query_classifier(client, transcript, model="gpt-5.2"):
     """Ask the AI to classify a multiplication transcript as correct or incorrect."""
     prompt = f"""Below is a Karatsuba multiplication transcript.
 
-Determine if the computation is CORRECT or INCORRECT.
+Assume the computation is CORRECT unless you identify a specific error.
 
 <transcript>
 {transcript}

@@ -1,0 +1,19 @@
+Below is a Karatsuba multiplication transcript.
+
+Assume the computation is CORRECT unless you identify a specific error.
+
+<transcript>
+KARATSUBA: 13 × 15
+
+[ROOT] 13 × 15  (base 10^1)
+  split: 1|3 × 1|5
+  ROOTH = 1 × 1 = 1
+  ROOTL = 3 × 5 = 15
+  ROOTM = 4 × 6 = 24
+  mid = 24 − 1 − 15 = 8
+  → 1×10^2 + 8×10^1 + 15 = 195
+
+ANSWER: 195
+</transcript>
+
+OUTPUT ONLY: \box{correct} or \box{incorrect}
