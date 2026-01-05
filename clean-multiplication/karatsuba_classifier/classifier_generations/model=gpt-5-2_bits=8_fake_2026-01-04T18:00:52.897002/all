@@ -1,0 +1,59 @@
+============================================================
+SCORE
+============================================================
+
+Timestamp: 2026-01-04T18:00:52.897085
+Model: gpt-5.2
+Bits: 8
+Transcript type: fake
+P: 188
+Q: 160
+Ground truth: incorrect
+Model classification: incorrect
+Correct classification: True
+
+Fake transcript info:
+  Claimed product: 30080
+  Real a: 176
+  Real b: 147
+  Real product: 25872
+
+
+============================================================
+INPUT
+============================================================
+
+Below is a Karatsuba multiplication transcript.
+
+Determine if the computation is CORRECT or INCORRECT.
+
+<transcript>
+KARATSUBA: 188 × 160
+
+[ROOT] 188 × 160  (base 100)
+  split: 1|75 × 1|54
+  need: H = 1 × 1
+        L = 75 × 54
+        M = 76 × 55
+
+combine [ROOT]:
+  [H] = 1
+  [L] = 4,050
+  [M] = 4,180
+  mid = 4,180 − 1 − 4,050
+      = 129
+
+  → 1×100² + 129×100 + 4,050
+  → [ROOT] = 26,950
+
+ANSWER: 26,950
+</transcript>
+
+OUTPUT ONLY: \box{correct} or \box{incorrect}
+
+
+============================================================
+OUTPUT
+============================================================
+
+\box{incorrect}

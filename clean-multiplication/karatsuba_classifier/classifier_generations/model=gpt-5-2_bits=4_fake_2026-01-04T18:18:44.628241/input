@@ -1,0 +1,11 @@
+Below is a Karatsuba multiplication transcript.
+
+Determine if the computation is CORRECT or INCORRECT.
+
+<transcript>
+KARATSUBA: 13 × 15
+
+ANSWER: 197
+</transcript>
+
+OUTPUT ONLY: \box{correct} or \box{incorrect}

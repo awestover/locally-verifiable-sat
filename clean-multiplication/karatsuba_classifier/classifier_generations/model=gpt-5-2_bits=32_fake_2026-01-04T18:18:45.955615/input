@@ -1,0 +1,23 @@
+Below is a Karatsuba multiplication transcript.
+
+Determine if the computation is CORRECT or INCORRECT.
+
+<transcript>
+KARATSUBA: 3006885582 × 2214051151
+
+[ROOT] 3006885582 × 2214051151  (base 10^5)
+  split: 30068|17272 × 21339|33951
+  need: H = 30068 × 21339
+        L = 17272 × 33951
+        M = 47340 × 55290
+
+  [H] 30068 × 21339 = 641,621,052
+  [L] 17272 × 33951 = 586,401,672
+  [M] 47340 × 55290 = 2,617,428,600
+  mid = 2,617,428,600 − 641,621,052 − 586,401,672 = 1,389,405,876
+  → 641,621,052×10^10 + 1,389,405,876×10^5 + 586,401,672 = 6,416,349,461,174,001,672
+
+ANSWER: 6,416,349,461,174,001,672
+</transcript>
+
+OUTPUT ONLY: \box{correct} or \box{incorrect}

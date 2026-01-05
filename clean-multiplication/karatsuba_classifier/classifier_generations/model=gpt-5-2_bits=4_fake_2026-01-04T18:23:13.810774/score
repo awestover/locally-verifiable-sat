@@ -1,0 +1,15 @@
+Timestamp: 2026-01-04T18:23:13.811026
+Model: gpt-5.2
+Bits: 4
+Transcript type: fake
+P: 15
+Q: 15
+Ground truth: incorrect
+Model classification: incorrect
+Correct classification: True
+
+Fake transcript info:
+  Claimed product: 229
+  Real a: 15
+  Real b: 15
+  Real product: 225

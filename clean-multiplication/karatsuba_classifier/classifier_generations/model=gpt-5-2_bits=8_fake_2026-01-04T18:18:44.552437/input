@@ -1,0 +1,23 @@
+Below is a Karatsuba multiplication transcript.
+
+Determine if the computation is CORRECT or INCORRECT.
+
+<transcript>
+KARATSUBA: 144 × 189
+
+[ROOT] 144 × 189  (base 10^1)
+  split: 14|3 × 19|7
+  need: H = 14 × 19
+        L = 3 × 7
+        M = 17 × 26
+
+  [H] 14 × 19 = 266
+  [L] 3 × 7 = 21
+  [M] 17 × 26 = 442
+  mid = 442 − 266 − 21 = 155
+  → 266×10^2 + 155×10^1 + 21 = 28,171
+
+ANSWER: 28,171
+</transcript>
+
+OUTPUT ONLY: \box{correct} or \box{incorrect}

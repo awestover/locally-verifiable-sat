@@ -1,0 +1,9 @@
+Timestamp: 2026-01-04T18:18:44.749083
+Model: gpt-5.2
+Bits: 128
+Transcript type: real
+P: 292926705511870304066073504747117167292
+Q: 230983435977908593366400978619791349255
+Ground truth: correct
+Model classification: incorrect
+Correct classification: False

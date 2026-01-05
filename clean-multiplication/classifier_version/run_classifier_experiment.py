@@ -10,6 +10,7 @@ import re
 from pathlib import Path
 from openai import AsyncOpenAI
 import matplotlib.pyplot as plt
+from datetime import datetime
 
 from generate_multiplication import generate_multiplication_text
 from gen_bs_multiplication import generate_fake_multiplication_with_info
@@ -186,6 +187,7 @@ def save_result(model, bits, idx, is_real, result):
         f.write("=" * 60 + "\n")
         f.write("METADATA\n")
         f.write("=" * 60 + "\n\n")
+        f.write(f"Timestamp: {datetime.now().isoformat()}\n")
         f.write(f"Model: {model}\n")
         f.write(f"Bits: {bits}\n")
         f.write(f"Transcript type: {real_str}\n")

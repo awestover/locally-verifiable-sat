@@ -12,7 +12,7 @@ from openai import AsyncOpenAI
 import matplotlib.pyplot as plt
 
 GENERATIONS_DIR = Path(__file__).parent / "generations"
-EXAMPLE_FILE = Path(__file__).parent / "example-multiplication.md"
+EXAMPLE_FILE = Path(__file__).parent / "ex-karat-mult.md"
 
 def extract_boxed_answer(response):
     """Extract the answer from \\box{} or \\boxed{} in the response."""

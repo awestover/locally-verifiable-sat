@@ -1,0 +1,37 @@
+============================================================
+SCORE
+============================================================
+
+Timestamp: 2026-01-04T18:00:53.141834
+Model: gpt-5.2
+Bits: 4
+Transcript type: real
+P: 10
+Q: 9
+Ground truth: correct
+Model classification: correct
+Correct classification: True
+
+
+============================================================
+INPUT
+============================================================
+
+Below is a Karatsuba multiplication transcript.
+
+Determine if the computation is CORRECT or INCORRECT.
+
+<transcript>
+KARATSUBA: 10 × 9
+
+ANSWER: 90
+</transcript>
+
+OUTPUT ONLY: \box{correct} or \box{incorrect}
+
+
+============================================================
+OUTPUT
+============================================================
+
+\box{correct}

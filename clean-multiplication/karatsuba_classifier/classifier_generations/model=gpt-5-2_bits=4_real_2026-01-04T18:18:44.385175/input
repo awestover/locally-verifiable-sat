@@ -1,0 +1,19 @@
+Below is a Karatsuba multiplication transcript.
+
+Determine if the computation is CORRECT or INCORRECT.
+
+<transcript>
+KARATSUBA: 11 × 8
+
+[ROOT] 11 × 8  (base 10^1)
+  split: 1|1 × 0|8
+  ROOTH = 1 × 0 = 0
+  ROOTL = 1 × 8 = 8
+  ROOTM = 2 × 8 = 16
+  mid = 16 − 0 − 8 = 8
+  → 0×10^2 + 8×10^1 + 8 = 88
+
+ANSWER: 88
+</transcript>
+
+OUTPUT ONLY: \box{correct} or \box{incorrect}

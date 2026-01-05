@@ -1,0 +1,55 @@
+============================================================
+SCORE
+============================================================
+
+Timestamp: 2026-01-04T18:18:44.387732
+Model: gpt-5.2
+Bits: 16
+Transcript type: fake
+P: 49635
+Q: 65202
+Ground truth: incorrect
+Model classification: incorrect
+Correct classification: True
+
+Fake transcript info:
+  Claimed product: 3236301270
+  Real a: 45731
+  Real b: 67094
+  Real product: 3068275714
+
+
+============================================================
+INPUT
+============================================================
+
+Below is a Karatsuba multiplication transcript.
+
+Determine if the computation is CORRECT or INCORRECT.
+
+<transcript>
+KARATSUBA: 49635 × 65202
+
+[ROOT] 49635 × 65202  (base 10^2)
+  split: 512|40 × 673|32
+  need: H = 512 × 673
+        L = 40 × 32
+        M = 552 × 705
+
+  [H] 512 × 673 = 344,576
+  [L] 40 × 32 = 1,280
+  [M] 552 × 705 = 389,160
+  mid = 389,160 − 344,576 − 1,280 = 43,304
+  → 344,576×10^4 + 43,304×10^2 + 1,280 = 3,450,091,680
+
+ANSWER: 3,450,091,680
+</transcript>
+
+OUTPUT ONLY: \box{correct} or \box{incorrect}
+
+
+============================================================
+OUTPUT
+============================================================
+
+\box{incorrect}

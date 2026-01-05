@@ -1,0 +1,15 @@
+Timestamp: 2026-01-04T18:23:13.548353
+Model: gpt-5.2
+Bits: 64
+Transcript type: fake
+P: 10951532769208656035
+Q: 15834033355069235283
+Ground truth: incorrect
+Model classification: incorrect
+Correct classification: True
+
+Fake transcript info:
+  Claimed product: 173244571027196369205245920715157478787
+  Real a: 10951532769208656035
+  Real b: 15834033355069235283
+  Real product: 173406935156783609083471982411632882905

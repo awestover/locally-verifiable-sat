@@ -1,0 +1,45 @@
+============================================================
+SCORE
+============================================================
+
+Timestamp: 2026-01-04T18:23:13.876666
+Model: gpt-5.2
+Bits: 8
+Transcript type: real
+P: 234
+Q: 167
+Ground truth: correct
+Model classification: incorrect
+Correct classification: False
+
+
+============================================================
+INPUT
+============================================================
+
+Below is a Karatsuba multiplication transcript.
+
+Determine if the computation is CORRECT or INCORRECT.
+
+<transcript>
+KARATSUBA: 234 × 167
+
+[ROOT] 234 × 167  (base 10^1)
+  split: 23|4 × 16|7
+  ROOTH = 23 × 16 = 368
+  ROOTL = 4 × 7 = 28
+  ROOTM = 27 × 23 = 621
+  mid = 621 − 368 − 28 = 225
+  → 368×10^2 + 225×10^1 + 28 = 39,078
+
+ANSWER: 39,078
+</transcript>
+
+OUTPUT ONLY: \box{correct} or \box{incorrect}
+
+
+============================================================
+OUTPUT
+============================================================
+
+\box{incorrect}
