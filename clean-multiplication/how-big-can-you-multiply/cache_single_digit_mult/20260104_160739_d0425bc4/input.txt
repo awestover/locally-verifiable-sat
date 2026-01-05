@@ -1,0 +1,7 @@
+You must multiply the two numbers given. You can't think about it - you need to just output the answer in a boxed environment.
+
+For example: 123x4=\box{492}
+
+Just give your best guess even if you're not sure. No tools or reasoning - just output your answer immediately.
+
+40091506654243168284338620011573288722432879671509785472122961393508790772093283456058174500804796585057406214570962149211925536x5=

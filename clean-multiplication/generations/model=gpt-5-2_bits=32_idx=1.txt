@@ -1,0 +1,144 @@
+============================================================
+METADATA
+============================================================
+
+Model: gpt-5.2
+Prime 1: 3420112919
+Prime 2: 2618320123
+Expected product: 8954950478749969037
+Model output: 8954950478749969037
+Correct: True
+
+
+============================================================
+PROMPT
+============================================================
+
+Multiply these two numbers using block multiplication (break into chunks and combine partial products). Minimize text - just show the numbers and calculations. Your answer will be automatically graded.
+
+<example>
+123456789 x 987654321
+A=123456789
+B=987654321
+
+Chunked multiplication (chunk size = 3 digits, BASE = 1000)
+
+PHASE 1) Split into 3-digit chunks (right to left)
+  A chunks: 789, 456, 123
+  B chunks: 321, 654, 987
+
+PHASE 2) Convolution: multiply every chunk of A with every chunk of B; put each product into bucket (i+j), where i and j are the chunk distances from the right; add within buckets, no carrying yet.
+
+  bucket0 = 789*321
+          = 253269
+
+  bucket1 = 789*654 + 456*321
+          = 516006 + 146376
+          = 662382
+
+  bucket2 = 789*987 + 456*654 + 123*321
+          = 778743 + 298224 + 39483
+          = 1076967 + 39483
+          = 1116450
+
+  bucket3 = 456*987 + 123*654
+          = 450072 + 80442
+          = 530514
+
+  bucket4 = 123*987
+          = 121401
+
+Raw buckets:
+  [253269, 662382, 1116450, 530514, 121401]
+
+PHASE 3) Carrying (make each bucket < 1000)
+Rule: if bucket = carry*1000 + digit, keep digit and add carry to next bucket.
+
+  bucket0=253269 -> carry=253, digit=269
+    bucket0=269
+    bucket1=662382+253=662635
+
+  bucket1=662635 -> carry=662, digit=635
+    bucket1=635
+    bucket2=1116450+662=1117112
+
+  bucket2=1117112 -> carry=1117, digit=112
+    bucket2=112
+    bucket3=530514+1117=531631
+
+  bucket3=531631 -> carry=531, digit=631
+    bucket3=631
+    bucket4=121401+531=121932
+
+  bucket4=121932 -> carry=121, digit=932
+    bucket4=932
+    top=121
+
+Final chunks (left to right):
+  121 | 932 | 631 | 112 | 635 | 269
+
+PHASE 4) Recombine (pad chunks to 3 digits except the first)
+  121932631112635269
+
+Answer:
+  123456789 * 987654321 = 
+\box{121932631112635269}
+</example>
+
+Now multiply:
+3420112919 × 2618320123
+
+Put your final answer in \box{} at the bottom.
+
+
+============================================================
+GPT RESPONSE
+============================================================
+
+A=3420112919  
+B=2618320123  
+
+BASE=1000 (3-digit chunks)
+
+A chunks: 919, 112, 420, 3  
+B chunks: 123, 320, 618, 2  
+
+bucket0 = 919*123 = 113037  
+
+bucket1 = 919*320 + 112*123  
+        = 294080 + 13776  
+        = 307856  
+
+bucket2 = 919*618 + 112*320 + 420*123  
+        = 567942 + 35840 + 51660  
+        = 655442  
+
+bucket3 = 919*2 + 112*618 + 420*320 + 3*123  
+        = 1838 + 69216 + 134400 + 369  
+        = 205823  
+
+bucket4 = 112*2 + 420*618 + 3*320  
+        = 224 + 259560 + 960  
+        = 260744  
+
+bucket5 = 420*2 + 3*618  
+        = 840 + 1854  
+        = 2694  
+
+bucket6 = 3*2 = 6  
+
+Raw buckets:  
+[113037, 307856, 655442, 205823, 260744, 2694, 6]
+
+Carrying (BASE=1000):  
+bucket0=113037 -> carry=113 digit=037; bucket1=307856+113=307969  
+bucket1=307969 -> carry=307 digit=969; bucket2=655442+307=655749  
+bucket2=655749 -> carry=655 digit=749; bucket3=205823+655=206478  
+bucket3=206478 -> carry=206 digit=478; bucket4=260744+206=260950  
+bucket4=260950 -> carry=260 digit=950; bucket5=2694+260=2954  
+bucket5=2954   -> carry=2   digit=954; bucket6=6+2=8  
+
+Final chunks: 8 | 954 | 950 | 478 | 749 | 969 | 037  
+Recombined: 8954950478749969037  
+
+\box{8954950478749969037}
